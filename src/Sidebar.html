@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+  <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+</head>
+
+<body>
+
+  <div class="sidebar branding-below">
+    <div id="sidebar-load-bar">
+      <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL">
+      <button class="action sidebar-load-button" id="sidebar-load-button">Load</button>
+    </div>
+
+    <div id="sidebar-container"></div>
+
+    <div id="sidebar-status"></div>
+  </div>
+
+  <div class="sidebar bottom"></div>
+
+  <!-- Use a templated HTML printing scriptlet to import JavaScript -->
+  <?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>
+</body>
+
+</html>

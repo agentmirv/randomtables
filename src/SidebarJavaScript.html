@@ -1,0 +1,96 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script>
+  $(function () {
+
+    $("#sidebar-container").on("container:append", function (event, sectonData) {
+      sectonData.sections.forEach(data => {
+      if (data.buttons.length > 0) {
+        $sectionDiv = $('<div class="sidebar-section">');
+        $titleBar = $('<div class="sidebar-section-title-bar">');
+        $title = $('<span class="sidebar-section-title">').text(data.name);
+        $close = $('<span class="sidebar-section-close">').text('x');
+        $titleBar.prepend($title);
+        $titleBar.prepend($close);
+        $sectionDiv.append($titleBar);
+        for (var i = 0; i < data.buttons.length; i++) {
+          $buttonDiv = $('<div class="block">');
+          $button = $('<button>', { class: 'action', 'data-url': data.url, 'data-id': data.buttons[i] }).text(data.buttons[i]);
+          $buttonDiv.append($button);
+          $sectionDiv.append($buttonDiv);
+        }
+        $(this).append($sectionDiv);
+
+        $close.on('click', function () {
+          $(this).closest( ".sidebar-section" ).remove();
+        });
+      }
+      });
+    }).on("click", "button[data-id]", function () {
+      var button = $(this);
+      button.prop('disabled', true);
+      var data_url = button.attr('data-url');
+      var data_id = button.attr('data-id');
+
+      google.script.run
+        .withSuccessHandler(
+          function () {
+            button.prop('disabled', false);
+            showStatus('Ready');
+          })
+        .withFailureHandler(
+          function (msg, element) {
+            // Respond to failure conditions here.
+            button.prop('disabled', false);
+            showStatus(msg, 'error');
+            element.disabled = false;
+          })
+        .spreadsheetFunction(data_url, data_id);
+    });
+
+    $("#sidebar-container").sortable({
+      handle: ".sidebar-section-title",
+      axis: "y"
+    });
+
+    $("#sidebar-load-button").click(function () {
+      var button = $(this);
+      button.prop('disabled', true);
+      var url = $("#sidebar-load-url").val();
+
+      google.script.run
+        .withSuccessHandler(
+          function (data) {
+            $("#sidebar-container").trigger("container:append", data);
+            $("#sidebar-load-url").val("");
+            button.prop('disabled', false);
+            showStatus('Ready');
+          })
+        .withFailureHandler(
+          function (msg, element) {
+            // Respond to failure conditions here.
+            button.prop('disabled', false);
+            showStatus(msg, 'error');
+            element.disabled = false;
+          })
+        .loadSpreadsheetUrl(url);
+    });
+
+  });
+
+  /**
+   * Displays the given status message in the sidebar.
+   *
+   * @param {String} msg The status message to display.
+   * @param {String} classId The message type (class id) that the message
+   *   should be displayed as.
+   */
+  function showStatus(msg, classId) {
+    $('#sidebar-status').removeClass().html(msg);
+    if (classId) {
+      $('#sidebar-status').addClass(classId);
+    }
+  }
+
+</script>
