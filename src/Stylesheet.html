@@ -4,7 +4,7 @@
 <style>
   #sidebar-load-bar {
     display: grid;
-    grid-template-columns: 150px, 1fr;
+    grid-template-columns: 150px 1fr;
     grid-gap: 5px;
     align-items: center;
   }
@@ -20,16 +20,21 @@
   .sidebar-section {
     border: 1px solid #3079ed;
     padding-left: 5px;
+    padding-right: 5px;
     padding-bottom: 5px;
+    padding-top: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
     background-color: #fff;
   }
 
   .sidebar-section-title-bar {
-    display: block;
-    position: relative;
+    margin-bottom: 5px;
     background-color: #eee;
+    display: grid;
+    grid-template-columns: 1fr 25px 25px;
+    grid-gap: 5px;
+    align-items: center;
   }
 
   .sidebar-section-title {
@@ -40,21 +45,24 @@
     padding-top: 10px;
     padding-bottom: 10px;
     margin-top: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     margin-right: 5px;    
     background-color: #eee;
+    grid-column: 1 / 2;
+  }
+
+  .sidebar-section-toggle{
+    font-size: 1.17em;
+    cursor: pointer;
+    grid-column: 2 / 3;
+    margin: auto;
   }
 
   .sidebar-section-close{
-    position: absolute;
     font-size: 1.17em;
-    right: 0;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    margin-top: 5px;
     cursor: pointer;
+    grid-column: 3 / 4;
+    margin: auto;
   }
 
   .form-grid {

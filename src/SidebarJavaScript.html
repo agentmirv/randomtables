@@ -10,20 +10,27 @@
         $sectionDiv = $('<div class="sidebar-section">');
         $titleBar = $('<div class="sidebar-section-title-bar">');
         $title = $('<span class="sidebar-section-title">').text(data.name);
+        $toggle = $('<span class="sidebar-section-toggle">').text('=');
         $close = $('<span class="sidebar-section-close">').text('x');
-        $titleBar.prepend($title);
-        $titleBar.prepend($close);
-        $sectionDiv.append($titleBar);
+        $titleBar.append($title);
+        $titleBar.append($toggle);
+        $titleBar.append($close);
+        $sectionDiv.append($titleBar)
+        $buttonContainer = $('<span class="sidebar-section-container">');
+        $sectionDiv.append($buttonContainer)
         for (var i = 0; i < data.buttons.length; i++) {
           $buttonDiv = $('<div class="block">');
           $button = $('<button>', { class: 'action', 'data-url': data.url, 'data-id': data.buttons[i] }).text(data.buttons[i]);
           $buttonDiv.append($button);
-          $sectionDiv.append($buttonDiv);
+          $buttonContainer.append($buttonDiv);
         }
         $(this).append($sectionDiv);
 
         $close.on('click', function () {
           $(this).closest( ".sidebar-section" ).remove();
+        });
+        $toggle.on('click', function () {
+          $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
         });
       }
       });
