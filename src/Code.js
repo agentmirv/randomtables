@@ -1,8 +1,4 @@
 /**
- * @REMOnlyCurrentDoc  Limits the script to only accessing the current document.
- */
-
-/**
  * Adds a custom menu with items to show the sidebar and dialog.
  *
  * @param {Object} e The event parameter for a simple onOpen trigger.
@@ -28,8 +24,13 @@ function onInstall(e) {
  * 
  */
 function showSidebar() {
-  var ui = HtmlService.createTemplateFromFile('Sidebar')
-    .evaluate()
+  let documentProperties = PropertiesService.getDocumentProperties();
+  let randomTablesUrl = documentProperties.getProperty('randomTablesUrl') || "";
+
+  let t = HtmlService.createTemplateFromFile('Sidebar')
+  t.randomTablesUrl = randomTablesUrl;
+
+  let ui = t.evaluate()
     .setTitle('Random Tables')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showSidebar(ui);
@@ -38,23 +39,42 @@ function showSidebar() {
 /**
  * 
  */
-function loadSpreadsheetUrl(url) {
-  var data = { sections: [] };
-  var section = getButtonData(url);
-  if (section != null) {
-  data.sections.push(getButtonData(url));
+function handleLoadButton(url) {
+  let documentProperties = PropertiesService.getDocumentProperties();
+
+  if (url.trim() == "") {
+    documentProperties.deleteProperty('randomTablesUrl');
+  } else {
+    documentProperties.setProperty('randomTablesUrl', url);
   }
 
-  var spreadsheet = SpreadsheetApp.openByUrl(url);
-  var name = spreadsheet.getName();
-  var sheet = spreadsheet.getSheetByName('Links');
-  if (sheet != null) {
-  var range = sheet.getRange(1, 2, sheet.getLastRow());
-  var values = range.getValues();
-  for (var i = 1; i < values.length; i++) {
-    data.sections.push(getButtonData(values[i][0]));
+  return loadSpreadsheetUrl(url);
+}
+
+/**
+ * 
+ */
+function loadSpreadsheetUrl(url) {
+  let data = { sections: [] };
+
+  if (url.trim() != "") {
+    let section = getButtonData(url);
+    if (section != null) {
+      data.sections.push(getButtonData(url));
+    }
+
+    let spreadsheet = SpreadsheetApp.openByUrl(url);
+    let name = spreadsheet.getName();
+    let sheet = spreadsheet.getSheetByName('Links');
+    if (sheet != null) {
+      let range = sheet.getRange(1, 2, sheet.getLastRow());
+      let values = range.getValues();
+      for (let i = 1; i < values.length; i++) {
+        data.sections.push(getButtonData(values[i][0]));
+      }
+    }
   }
-  }  
+
   return data;
 }
 
@@ -62,18 +82,17 @@ function loadSpreadsheetUrl(url) {
  * 
  */
 function getButtonData(url) {
-  var spreadsheet = SpreadsheetApp.openByUrl(url);
-  var name = spreadsheet.getName();
-  var sheet = spreadsheet.getSheetByName('Index');
-  if (sheet != null)
-  {
-  var range = sheet.getRange(1, 1, sheet.getLastRow());
-  var values = range.getValues();
-  var buttons = [];
-  for (var i = 1; i < values.length; i++) {
-    buttons.push(values[i][0]);
-  }
-  return { url: url, name: name, buttons: buttons };
+  let spreadsheet = SpreadsheetApp.openByUrl(url);
+  let name = spreadsheet.getName();
+  let sheet = spreadsheet.getSheetByName('Index');
+  if (sheet != null) {
+    let range = sheet.getRange(1, 1, sheet.getLastRow());
+    let values = range.getValues();
+    let buttons = [];
+    for (let i = 1; i < values.length; i++) {
+      buttons.push(values[i][0]);
+    }
+    return { url: url, name: name, buttons: buttons };
   }
 }
 
@@ -81,13 +100,13 @@ function getButtonData(url) {
  * 
  */
 function showDialog(url, function_name, inputs) {
-  var t = HtmlService.createTemplateFromFile('Dialog');
+  let t = HtmlService.createTemplateFromFile('Dialog');
   t.url = url;
   t.function_name = function_name;
   t.inputs = inputs;
 
-  var rowHeight = 34;
-  var ui = t.evaluate()
+  let rowHeight = 34;
+  let ui = t.evaluate()
     .setWidth(400)
     .setHeight((inputs.length * rowHeight) + (3 * rowHeight))
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
@@ -99,12 +118,12 @@ function showDialog(url, function_name, inputs) {
  * Adds content at the cursor location. 
  */
 function addAtCursor(content) {
-  var cursor = DocumentApp.getActiveDocument().getCursor();
+  let cursor = DocumentApp.getActiveDocument().getCursor();
   if (cursor) {
-    var element = cursor.insertText(content);
-    var parent = element.getParent();
-    var elementIndex = parent.getChildIndex(element);
-    var cursorNew = DocumentApp.getActiveDocument().newPosition(parent, elementIndex + 1);
+    let element = cursor.insertText(content);
+    let parent = element.getParent();
+    let elementIndex = parent.getChildIndex(element);
+    let cursorNew = DocumentApp.getActiveDocument().newPosition(parent, elementIndex + 1);
     DocumentApp.getActiveDocument().setCursor(cursorNew);
   }
 }
@@ -113,26 +132,26 @@ function addAtCursor(content) {
  * 
  */
 function spreadsheetFunction(url, function_name) {
-  var ui = DocumentApp.getUi();
-  var spreadsheet = SpreadsheetApp.openByUrl(url);
-  var indexSheet = spreadsheet.getSheetByName('Index');
-  var indexRange = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3);
-  var indexValues = indexRange.getValues();
+  let ui = DocumentApp.getUi();
+  let spreadsheet = SpreadsheetApp.openByUrl(url);
+  let indexSheet = spreadsheet.getSheetByName('Index');
+  let indexRange = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3);
+  let indexValues = indexRange.getValues();
 
-  for (var i = 0; i < indexValues.length; i++) {
+  for (let i = 0; i < indexValues.length; i++) {
     if (function_name == indexValues[i][0]) {
-      var output_cell = indexValues[i][1];
-      var input_cell = indexValues[i][2];
+      let output_cell = indexValues[i][1];
+      let input_cell = indexValues[i][2];
 
       if (input_cell != "") {
         // Get inputs 
-        var inputs = [];
-        var inputRange = spreadsheet.getRange(input_cell);
-        var inputRangeValues = inputRange.getValues();
-        var inputRangeValidations = inputRange.getDataValidations();
+        let inputs = [];
+        let inputRange = spreadsheet.getRange(input_cell);
+        let inputRangeValues = inputRange.getValues();
+        let inputRangeValidations = inputRange.getDataValidations();
 
-        for (var j = 0; j < inputRangeValues[0].length; j++) {
-          var input = {
+        for (let j = 0; j < inputRangeValues[0].length; j++) {
+          let input = {
             input_help: inputRangeValues[0][j],
             default_value: inputRangeValues[1][j],
             input_range: inputRange.getCell(2, j + 1).getA1Notation()
@@ -141,25 +160,25 @@ function spreadsheetFunction(url, function_name) {
           if (inputRangeValidations[1][j] != null) {
             input.input_type = inputRangeValidations[1][j].getCriteriaType();
             if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
-              var criteria = inputRangeValidations[1][j].getCriteriaValues();
+              let criteria = inputRangeValidations[1][j].getCriteriaValues();
               input.input_options = criteria[0];
             } else if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE) {
-              var criteria = inputRangeValidations[1][j].getCriteriaValues();
-              var criteriaRange = criteria[0];
+              let criteria = inputRangeValidations[1][j].getCriteriaValues();
+              let criteriaRange = criteria[0];
               input.input_options = criteriaRange.getValues().flat();
             }
           }
-          
+
           inputs.push(input);
         }
 
         showDialog(url, function_name, inputs);
       } else {
         // Cycle random sheet functions
-        var temp = spreadsheet.getRange('A1').getValue();
+        let temp = spreadsheet.getRange('A1').getValue();
         spreadsheet.getRange('A1').setValue(temp);
 
-        var output = spreadsheet.getRange(output_cell).getValue();
+        let output = spreadsheet.getRange(output_cell).getValue();
         addAtCursor(`${output}\n`);
       }
 
@@ -172,28 +191,28 @@ function spreadsheetFunction(url, function_name) {
  * 
  */
 function submitDialog(data) {
-  var ui = DocumentApp.getUi();
-  var spreadsheet = SpreadsheetApp.openByUrl(data.url);
-  var indexSheet = spreadsheet.getSheetByName('Index');
-  var indexRange = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3);
-  var indexValues = indexRange.getValues();
+  let ui = DocumentApp.getUi();
+  let spreadsheet = SpreadsheetApp.openByUrl(data.url);
+  let indexSheet = spreadsheet.getSheetByName('Index');
+  let indexRange = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3);
+  let indexValues = indexRange.getValues();
 
-  for (var i = 0; i < indexValues.length; i++) {
+  for (let i = 0; i < indexValues.length; i++) {
     if (data.function_name == indexValues[i][0]) {
-      var output_cell = indexValues[i][1];
-      var input_cell = indexValues[i][2];
-      var inputRange = spreadsheet.getRange(input_cell);
-      var inputRangeValues = inputRange.getValues();
+      let output_cell = indexValues[i][1];
+      let input_cell = indexValues[i][2];
+      let inputRange = spreadsheet.getRange(input_cell);
+      let inputRangeValues = inputRange.getValues();
 
-      for (var j = 0; j < inputRangeValues[0].length; j++) {
-        var cell = inputRange.getCell(2, j + 1);
-        var key = cell.getA1Notation();
+      for (let j = 0; j < inputRangeValues[0].length; j++) {
+        let cell = inputRange.getCell(2, j + 1);
+        let key = cell.getA1Notation();
         if (key in data.input) {
           cell.setValue(data.input[key])
         }
       }
 
-      var output = spreadsheet.getRange(output_cell).getValue();
+      let output = spreadsheet.getRange(output_cell).getValue();
       addAtCursor(`${output}\n`);
     }
   }

@@ -44,7 +44,7 @@
         .withSuccessHandler(
           function () {
             button.prop('disabled', false);
-            showStatus('Ready');
+            showStatus('');
           })
         .withFailureHandler(
           function (msg, element) {
@@ -70,9 +70,8 @@
         .withSuccessHandler(
           function (data) {
             $("#sidebar-container").trigger("container:append", data);
-            $("#sidebar-load-url").val("");
             button.prop('disabled', false);
-            showStatus('Ready');
+            showStatus('');
           })
         .withFailureHandler(
           function (msg, element) {
@@ -81,9 +80,10 @@
             showStatus(msg, 'error');
             element.disabled = false;
           })
-        .loadSpreadsheetUrl(url);
+        .handleLoadButton(url);
     });
-
+    
+    $("#sidebar-load-button").trigger("click");
   });
 
   /**
