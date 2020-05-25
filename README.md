@@ -4,7 +4,7 @@
 
 Random Tables came out of an exploration of solo tabletop RPG. With the absense of a GM, the soloist takes on activities of both player and GM.  
 
-To aid in the GM side of things, a soloist can use random tables. The player roles a die, like a d20, and uses the result to reference a table whose entries were numbered, in this case 1 to 20.  
+To aid in the GM side of things, a soloist can use random tables. The player roles a die, like a d20, and uses the result to reference a table whose entries are numbered, in this case 1 to 20.  
 
 Perhaps this table has entries of magicial items, rolled when opening a chest. Or perhaps the table has entries of monster encounters, rolled when proceeding through a wilderness.  
 
@@ -52,7 +52,7 @@ The input range is a range of two rows. The first row is the input label, the se
 | 1    | Button   | Output       | Input           |
 | 2    | Roll d20 | Functions!A1 | Functions!A2:A3 |
 
-#### Function Sheet Example
+#### Functions Sheet Example
 |      | A                  | B     |
 | :--- | :---               | :---  |
 | 1    | =A3&"d20: "&A3*A5  |       |
