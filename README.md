@@ -70,7 +70,7 @@ The section title supports the following GUI operations:
 * The *x button* removes the section
 * The title bar can be used to drag the section for rearranging the order of the sections
 
-Upon successful load, the url in the sidebar textbox is saved as a document property. Currently this is the only sidebar value saved. When the sidebar is reopened, the textbox is repopulated and the url is reloaded automatically. Loading an empty textbox will delete the saved url value from the document property.  
+Upon successful load, the url in the sidebar textbox is saved as a document property. Currently, this is the only sidebar value saved. When the sidebar is reopened, the textbox is repopulated and the url is reloaded automatically. Loading an empty textbox will delete the saved url value from the document property.  
 
 You may have several commonly used Google Sheets that you want to load as a group. This may be accomplished with a sheet named **Links**.
 
@@ -83,7 +83,7 @@ When a Google Sheet url is loaded from the sidebar, a sheet named **Links** can 
 | :--- | :---     | :---         | 
 | 1    | Name     | URL          | 
 | 2    | Dice     | https://docs.google.com/spreadsheets/d/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/edit | 
-| 2    | Mythic GME     | https://docs.google.com/spreadsheets/d/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB/edit | 
+| 3    | Mythic GME     | https://docs.google.com/spreadsheets/d/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB/edit | 
 
 Columns A to B contain the following data:  
 * A - (optional) a descriptive name
