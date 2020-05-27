@@ -93,13 +93,43 @@ If any of the additional Google Sheet urls have their own **Links** sheets, thes
 
 ## How do I use this?
 
-I plan to release this as a Google Docs Add-On, accessible via the G Suite Marketplace in the future.  
+This is not currently available as an Add-on in the G Suite Marketplace.
 
-If you want to use it now I suggest using the **Tools -> Script editor** menu option in one of your Google Docs. This will result in a new script project (called a "container-bound script" in the Google App Script documentation.)  
+You have two options. Either 1) Copy the source to a new Google Doc or 2) Copy the examples from the public folder to your Google Drive. 
+
+#### Copy the Source (option 1)
+
+In a new Google Doc, use the **Tools -> Script editor** menu option. This will result in a new script project (referred to as a "container-bound script" in the Google App Script documentation.)  
 
 You will need to recreate the files under the /src folder from this repository in the Google App Script editor. Don't create a src folder in the Google App Script editor, just put the files in the root. You won't need the src/appsscript.json file.
 
 When you run the script for the first time in a document (by using the Add-On menu), you will be prompted to give permissions. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.  
 
-I plan on making a few example Google Sheet urls public. I will update this documentation when ready. 
+In the following section, there is a Url of a public folder where there are example Google Sheets that follow the above format. Additionally there is a Google Doc called "Adventure Journal Example" that already has the script as a container-bound Add-on. If you wish to use these files, see the following section.
 
+#### Copy the Examples (option 2)
+
+**Random Tables Examples**  
+https://drive.google.com/drive/folders/1S30zpuHb1cNiS0uHXMJoq-lLDELhLQrB?usp=sharing
+
+The above public Google Drive folder contains the following example files.
+
+To use these files, select them all and use the **Make a copy** option to make copies to your Google Drive. Then use your copies of the files.
+
+**Adventure Journal Example (Google Doc)**  
+* This document already has the Random Tables Add-on as a container-bound script.
+* To confirm the contents of the script, use the menu option **Tools -> Script editor**. The editor will be shown with all the source code.  
+* I have noticed that if the Add-on menu or the Random Tables menu does not appear, you may need to re-open the document.
+* Since the Random Tables script is not verified, you will be prompted to give permissions when run. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.
+
+**Character - Steve (Google Sheet)**  
+* A simple character sheet implemented as a spreadsheet with buttons that perform specific common checks.
+
+**Dice (Google Sheet)**  
+* Several common dice rolls (some prompt for a multiplier), and an additional general dice roll where the number of sides can be specified.
+
+**Rolls (Google Sheet)**  
+* A few generic dice roll checks from known games.
+
+**Tables (Google Sheet)**  
+* A few general table rolls with different lookup techniques.
