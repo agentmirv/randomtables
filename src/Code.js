@@ -24,8 +24,8 @@ function onInstall(e) {
  * 
  */
 function showSidebar() {
-  let documentProperties = PropertiesService.getDocumentProperties();
-  let randomTablesUrl = documentProperties.getProperty('randomTablesUrl') || "";
+  let userProperties = PropertiesService.getUserProperties();
+  let randomTablesUrl = userProperties.getProperty('randomTablesUrl') || "";
 
   let t = HtmlService.createTemplateFromFile('Sidebar')
   t.randomTablesUrl = randomTablesUrl;
@@ -40,12 +40,12 @@ function showSidebar() {
  * 
  */
 function handleLoadButton(url) {
-  let documentProperties = PropertiesService.getDocumentProperties();
+  let userProperties = PropertiesService.getUserProperties();
 
   if (url.trim() == "") {
-    documentProperties.deleteProperty('randomTablesUrl');
+    userProperties.deleteProperty('randomTablesUrl');
   } else {
-    documentProperties.setProperty('randomTablesUrl', url);
+    userProperties.setProperty('randomTablesUrl', url);
   }
 
   return loadSpreadsheetUrl(url);
