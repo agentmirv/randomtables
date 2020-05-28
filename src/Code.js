@@ -1,4 +1,9 @@
 /**
+ * Random Tables
+ * Marvin Sevilla
+ */
+
+/**
  * Adds a custom menu with items to show the sidebar and dialog.
  *
  * @param {Object} e The event parameter for a simple onOpen trigger.
@@ -21,7 +26,8 @@ function onInstall(e) {
 }
 
 /**
- * 
+ * Opens a sidebar. The sidebar structure is described in the Sidebar.html
+ * project file.
  */
 function showSidebar() {
   let userProperties = PropertiesService.getUserProperties();
@@ -37,7 +43,10 @@ function showSidebar() {
 }
 
 /**
- * 
+ * Handles the load button click.
+ *
+ * @param {string} url The event of the spreadsheet url.
+ * @returns {Object} The data used to draw the sidebar sections.
  */
 function handleLoadButton(url) {
   let userProperties = PropertiesService.getUserProperties();
@@ -52,7 +61,11 @@ function handleLoadButton(url) {
 }
 
 /**
- * 
+ * Loads the spreadsheet from the url (Buttons sheet)
+ * Also processes the Links sheet.
+ *
+ * @param {string} url The event of the spreadsheet url.
+ * @returns {Object} The data used to draw the sidebar sections.
  */
 function loadSpreadsheetUrl(url) {
   let data = { sections: [] };
@@ -79,7 +92,10 @@ function loadSpreadsheetUrl(url) {
 }
 
 /**
- * 
+ * Loads the spreadsheet url and processes the Button sheet.
+ *
+ * @param {string} url The event of the spreadsheet url.
+ * @returns {Object} The data used to draw a single sidebar section. 
  */
 function getButtonData(url) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
@@ -97,7 +113,12 @@ function getButtonData(url) {
 }
 
 /**
+ * Opens a dialog. The dialog structure is described in the Dialog.html
+ * project file.
  * 
+ * @param {string} url The event of the spreadsheet url.
+ * @param {string} function_name The function name, the first column of the Index sheet.
+ * @param {Object} inputs The object representing the inputs to be rendered on the Dialog.
  */
 function showDialog(url, function_name, inputs) {
   let t = HtmlService.createTemplateFromFile('Dialog');
@@ -115,7 +136,9 @@ function showDialog(url, function_name, inputs) {
 }
 
 /**
- * Adds content at the cursor location. 
+ * Adds content at the cursor position. 
+ * 
+ * @param {string} content The text to be written at the cursor position.
  */
 function addAtCursor(content) {
   let cursor = DocumentApp.getActiveDocument().getCursor();
@@ -129,7 +152,11 @@ function addAtCursor(content) {
 }
 
 /**
+ * Processes the function in the spreadsheet and 
+ * shows the Dialog or processes the output.
  * 
+ * @param {string} url The event of the spreadsheet url.
+ * @param {string} function_name The function name, the first column of the Index sheet.
  */
 function spreadsheetFunction(url, function_name) {
   let ui = DocumentApp.getUi();
@@ -188,7 +215,10 @@ function spreadsheetFunction(url, function_name) {
 }
 
 /**
+ * Processes the submit of the Dialog, calling the spreadsheet function
+ * and processes the output.
  * 
+ * @param {Object} data The object representing data submitted from the Dialog form. 
  */
 function submitDialog(data) {
   let ui = DocumentApp.getUi();
