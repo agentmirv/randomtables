@@ -4,7 +4,7 @@
 
 Random Tables came out of an exploration of solo tabletop RPG. With the absense of a GM, the soloist takes on activities of both player and GM.  
 
-To aid in the GM side of things, a soloist can use random tables. The player roles a die, like a d20, and uses the result to reference a table whose entries are numbered, in this case 1 to 20.  
+To aid in the GM side of things, a soloist can use random tables. The soloist roles a die, like a d20, and uses the result to reference a table whose entries are numbered, in this case 1 to 20.  
 
 Perhaps this table has entries of magicial items, rolled when opening a chest. Or perhaps the table has entries of monster encounters, rolled when proceeding through a wilderness.  
 
@@ -20,7 +20,7 @@ The middleware connecting the two is Google App Script.
 
 ## What does this do?
 
-When this script is loaded in a Google Doc, **Random Tables** appears under the Add-ons menu. A **Show sidebar** option appears under the **Random Tables** Add-on menu.  In the sidebar, use the load control to load a Google Sheet from a url. The Google Sheet must follow the format below. The sidebar will populate with buttons that call functions (random tables) in the Google Sheet, and write the result into the document.
+When this script is loaded in a Google Doc, **Random Tables** appears under the Add-ons menu. A **Show sidebar** option appears under the **Random Tables** Add-on menu.  In the sidebar, use the load control to load a Google Sheet from a url. The Google Sheet must follow the format below. The sidebar will be populated with buttons that call functions (random tables) in the Google Sheet, and write the result into the document.
 
 Examples of buttons are: 
 1. Roll d20 - return a number between 1 and 20 
@@ -30,11 +30,11 @@ Examples of buttons are:
 
 Google Sheets is a very powerful tool, and not every function needs to employ a table. For example, the *Roll d20* button can use the RANDBETWEEN() Google Sheet function to generate a random number.  
 
-These functions may take input from the user. If an input is defined for the function, the button will prompt the user with a dialog.  Google Sheet range and list data validation is supported and is rendered as a dropdown list in the dialog.
+These functions may take input from the user. If an input is defined for the function, the button will prompt the user with a dialog.  Google Sheet data validation for range and for list are supported and are rendered as a dropdown list in the dialog.
 
 ## Google Sheet Format
 
-A Google Sheet (spreadsheet) can contain one or more named sheets. The following describes a sheet named **Index** and a sheet named **Links**.
+A Google Sheet (spreadsheet) can contain one or more named sheets. The following sections describes a sheet named **Index** and a sheet named **Links**.
 
 ### Index Sheet
 The sidebar buttons are generated from entries in a sheet named **Index**.  The first row is assumed to be a header and is skipped.  
