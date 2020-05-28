@@ -32,6 +32,8 @@ Google Sheets is a very powerful tool, and not every function needs to employ a 
 
 These functions may take input from the user. If an input is defined for the function, the button will prompt the user with a dialog.  Google Sheet data validation for range and for list are supported and are rendered as a dropdown list in the dialog.
 
+![](/images/screen1.png)
+
 ## Google Sheet Format
 
 A Google Sheet (spreadsheet) can contain one or more named sheets. The following sections describes a sheet named **Index** and a sheet named **Links**.
