@@ -6,6 +6,8 @@ Random Tables came out of an exploration of solo tabletop RPG. With the absense 
 
 To aid in the GM side of things, a soloist can use random tables. The soloist roles a die, like a d20, and uses the result to reference a table whose entries are numbered, in this case 1 to 20.  
 
+![old-school random table](/images/keep_table.jpg)
+
 Perhaps this table has entries of magicial items, rolled when opening a chest. Or perhaps the table has entries of monster encounters, rolled when proceeding through a wilderness.  
 
 To soloist often records the experience as a narrative in a document or journal. The narrative can be as descriptive or as prosy as the soloist desires, enough to express the events of the adventure.  
