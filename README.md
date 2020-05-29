@@ -10,13 +10,13 @@ To aid in the GM side of things, a soloist can use random tables. The soloist ro
 
 Perhaps this table has entries of magicial items, rolled when opening a chest. Or perhaps the table has entries of monster encounters, rolled when proceeding through a wilderness.  
 
-To soloist often records the experience as a narrative in a document or journal. The narrative can be as descriptive or as prosy as the soloist desires, enough to express the events of the adventure.  
+The soloist often records the experience as a narrative in a document or journal. The narrative can be as descriptive or as prosy as the soloist desires, enough to express the events of the adventure.  
 
 A popular solo tabletop RPG is [Ironsworn](https://www.ironswornrpg.com/), by Shawn Tomkin. Many players use Google Docs to journal their adventures.
 
-Google Sheets is a natural fit for storing and working with data stored in a table.  
+Google Sheets is a natural fit for storing and working with tables.  
 
-I saw an opportunity to combine the adventure journal in Google Docs with the automation the rolling of random tables in Google Sheets.  
+I saw an opportunity to combine the adventure journal in Google Docs with the automation the rolling of random tables in Google Sheets. 
 
 The middleware connecting the two is Google App Script.
 
@@ -32,13 +32,13 @@ Examples of buttons are:
 
 Google Sheets is a very powerful tool, and not every function needs to employ a table. For example, the *Roll d20* button can use the RANDBETWEEN() Google Sheet function to generate a random number.  
 
-These functions may take input from the user. If an input is defined for the function, the button will prompt the user with a dialog.  Google Sheet data validation for range and for list are supported and are rendered as a dropdown list in the dialog.
+These functions may take input from the user. If an input is defined for the function, the button will prompt the user with a dialog.  Google Sheet data validation for range and for list are supported and are rendered as a dropdown lists in the dialog.
 
 ![](/images/screen1.png)
 
 ## Google Sheet Format
 
-A Google Sheet (spreadsheet) can contain one or more named sheets. The following sections describes a sheet named **Index** and a sheet named **Links**.
+A Google Sheet (spreadsheet) can contain one or more named sheets. The following sections describe a sheet named **Index** and a sheet named **Links**.
 
 ### Index Sheet
 The sidebar buttons are generated from entries in a sheet named **Index**.  The first row is assumed to be a header and is skipped.  
