@@ -40,6 +40,8 @@ These functions may take input from the user. If an input is defined for the fun
 
 A Google Sheet (spreadsheet) can contain one or more named sheets. The following sections describe a sheet named **Index** and a sheet named **Links**.
 
+For Google Sheet examples of the format described below, see the example folder URL in the section **How do I use this?**
+
 ### Index Sheet
 The sidebar buttons are generated from entries in a sheet named **Index**.  The first row is assumed to be a header and is skipped.  
 
