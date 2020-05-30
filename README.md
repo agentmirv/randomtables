@@ -97,7 +97,7 @@ If any of the additional Google Sheet urls have their own **Links** sheets, thes
 
 ## How do I use this?
 
-This is not currently available as an Add-on in the G Suite Marketplace.
+This is not yet available as an Add-on in the G Suite Marketplace.
 
 You have two options. Either 1) Copy the source to a new Google Doc or 2) Copy the examples from the public folder to your Google Drive. 
 
