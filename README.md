@@ -115,7 +115,7 @@ In the following section, there is a Url of a public folder where there are exam
 
 #### Copy the Examples (option 2)
 
-:file_folder: **Random Tables Examples**  
+**Random Tables Examples** :file_folder:  
 https://drive.google.com/drive/folders/1S30zpuHb1cNiS0uHXMJoq-lLDELhLQrB?usp=sharing
 
 The above public Google Drive folder contains the following example files.
@@ -126,7 +126,7 @@ To use these files, select them all and use the **Make a copy** option to make c
 * This document already has the Random Tables Add-on as a container-bound script.
 * To confirm the contents of the script, use the menu option **Tools -> Script editor**. The editor will be shown with all the source code.  
 * I have noticed that if the Add-on menu or the Random Tables menu does not appear, you may need to re-open the document.
-* Since the Random Tables script is not verified, you will be prompted to give permissions when run. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.
+* You will be prompted to give permissions when run. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.
 
 **Character - Steve (Google Sheet)**  
 * A simple character sheet implemented as a spreadsheet with buttons that perform specific common checks.
