@@ -115,7 +115,7 @@ In the following section, there is a Url of a public folder where there are exam
 
 #### Copy the Examples (option 2)
 
-**Random Tables Examples**  
+:file_folder: **Random Tables Examples**  
 https://drive.google.com/drive/folders/1S30zpuHb1cNiS0uHXMJoq-lLDELhLQrB?usp=sharing
 
 The above public Google Drive folder contains the following example files.
