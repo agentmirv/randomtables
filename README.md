@@ -61,13 +61,13 @@ The input range is a range of two rows. The first row is the input label, the se
 #### Functions Sheet Example
 |      | A                  | B     |
 | :--- | :---               | :---  |
-| 1    | =A3&"d20: "&A3*A5  |       |
-| 2    | Multiplier         |       |
+| 1    | ="d20+"&A3&": "&A5+A3  |       |
+| 2    | Modifier           |       |
 | 3    | 1                  |       |
 | 4    | Roll               |       |
 | 5    | =RANDBETWEEN(1,20) |       |
 
-In the above example, the text *Multiplier* is the input label for the input cell at A3. The text *Roll* is merely documenting the random number generation at A5.  
+In the above example, the text *Modifier* is the input label for the input cell at A3. The text *Roll* is merely documenting the random number generation at A5.  
 
 Upon successful load from the sidebar, a section of buttons is added to the sidebar with the section titled from the Google Sheet filename.  
 
