@@ -99,34 +99,19 @@ If any of the additional Google Sheet urls have their own **Links** sheets, thes
 
 ## How do I use this?
 
-This is not yet available as an Add-on in the G Suite Marketplace.
+This is now available as a Google Doc Add-on in the G Suite Marketplace.
 
-You have two options. Either 1) Copy the source to a new Google Doc or 2) Copy the examples from the public folder to your Google Drive. 
+#### G Suite Marketplace (option 1)
+https://gsuite.google.com/marketplace/app/appname/645649794340
 
-#### Copy the Source (option 1)
+For examples of Google Sheets that implement the format above, see the **Random Tables Examples** folder URL below.
 
-In a new Google Doc, use the **Tools -> Script editor** menu option. This will result in a new script project (referred to as a "container-bound script" in the Google App Script documentation.)  
-
-You will need to recreate the files under the /src folder from this repository in the Google App Script editor. Don't create a src folder in the Google App Script editor, just put the files in the root. You won't need the src/appsscript.json file.
-
-When you run the script for the first time in a document (by using the Add-On menu), you will be prompted to give permissions. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.  
-
-In the following section, there is a Url of a public folder where there are example Google Sheets that follow the above format. Additionally there is a Google Doc called "Adventure Journal Example" that already has the script as a container-bound Add-on. If you wish to use these files, see the following section.
-
-#### Copy the Examples (option 2)
-
-**Random Tables Examples** :file_folder:  
+**Random Tables Examples**   
 https://drive.google.com/drive/folders/1S30zpuHb1cNiS0uHXMJoq-lLDELhLQrB?usp=sharing
-
-The above public Google Drive folder contains the following example files.
 
 To use these files, select them all and use the **Make a copy** option to make copies to your Google Drive. Then use your copies of the files.
 
-**Adventure Journal Example (Google Doc)**  
-* This document already has the Random Tables Add-on as a container-bound script.
-* To confirm the contents of the script, use the menu option **Tools -> Script editor**. The editor will be shown with all the source code.  
-* I have noticed that if the Add-on menu or the Random Tables menu does not appear, you may need to re-open the document.
-* You will be prompted to give permissions when run. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.
+The above public Google Drive folder contains the following example files.
 
 **Character - Steve (Google Sheet)**  
 * A simple character sheet implemented as a spreadsheet with buttons that perform specific common checks.
@@ -139,3 +124,11 @@ To use these files, select them all and use the **Make a copy** option to make c
 
 **Tables (Google Sheet)**  
 * A few general table rolls with different lookup techniques.
+
+#### Copy the Source (option 2)
+
+In a new Google Doc, use the **Tools -> Script editor** menu option. This will result in a new script project (referred to as a "container-bound script" in the Google App Script documentation.)  
+
+You will need to recreate the files under the /src folder from this repository in the Google App Script editor. Don't create a src folder in the Google App Script editor, just put the files in the root. You won't need the src/appsscript.json file.
+
+When you run the script for the first time in a document (by using the Add-On menu), you will be prompted to give permissions. Once you have completed the prompts, you will need to use the Add-On menu again.  This only happens once per document.  
