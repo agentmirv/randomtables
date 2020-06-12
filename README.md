@@ -22,7 +22,7 @@ The middleware connecting the two is Google App Script.
 
 ## What does this do?
 
-When this script is loaded in a Google Doc, **Random Tables** appears under the Add-ons menu. A **Show sidebar** option appears under the **Random Tables** Add-on menu.  In the sidebar, use the load control to load a Google Sheet from a url. The Google Sheet must follow the format below. The sidebar will be populated with buttons that call functions (random tables) in the Google Sheet, and write the result into the document.
+After this Add-on is installed, **Random Tables** appears under the Add-ons menu. Select the **Show sidebar** option under the **Random Tables** Add-on menu to show the sidebar.  In the sidebar, use the load control to load a Google Sheet from a url. The Google Sheet must follow the format below. After the load completes, the sidebar will be populated with buttons that call functions (random tables) in the Google Sheet, and write the result into the document.
 
 Examples of buttons are: 
 1. Roll d20 - return a number between 1 and 20 
@@ -114,7 +114,7 @@ To use these files, select them all and use the **Make a copy** option to make c
 The above public Google Drive folder contains the following example files.
 
 **Character - Steve (Google Sheet)**  
-* A simple character sheet implemented as a spreadsheet with buttons that perform specific common checks.
+* A simple character sheet implemented as a spreadsheet with functions that perform specific common checks.
 
 **Dice (Google Sheet)**  
 * Several common dice rolls (some prompt for a multiplier), and an additional general dice roll where the number of sides can be specified.
