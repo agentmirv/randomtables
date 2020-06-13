@@ -58,6 +58,8 @@ The input range is a range of two rows. The first row is the input label, the se
 | 1    | Button   | Output       | Input           |
 | 2    | Roll d20 | Functions!A1 | Functions!A2:A3 |
 
+In the above example, the button defined at row 2 will show the text *Roll d20*. The output cell contains a string that references the *A1* cell in the sheet called *Functions*. The input cell contains a string that references a range from A2 to A3 in the sheet called *Functions*.  
+
 #### Functions Sheet Example
 |      | A                  | B     |
 | :--- | :---               | :---  |
@@ -67,7 +69,7 @@ The input range is a range of two rows. The first row is the input label, the se
 | 4    | Roll               |       |
 | 5    | =RANDBETWEEN(1,20) |       |
 
-In the above example, the text *Modifier* is the input label for the input cell at A3. The text *Roll* is merely documenting the random number generation at A5.  
+In the above example, the output cell is A1, where the formula builds an output string. The input takes a single parameter in the range A2:A3, where A2 is the input label and A3 is the input value. If there were an additional input parameters, they would start in the next column at B2:B3. 
 
 Upon successful load from the sidebar, a section of buttons is added to the sidebar with the section titled from the Google Sheet filename.  
 
