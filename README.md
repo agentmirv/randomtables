@@ -74,8 +74,9 @@ In the above example, the output cell is A1, where the formula builds an output 
 Upon successful load from the sidebar, a section of buttons is added to the sidebar with the section titled from the Google Sheet filename.  
 
 The section title supports the following GUI operations:
-* The *equals button* collapses the button area
-* The *x button* removes the section
+* The *arrow button* (&nearr;) opens the Google Sheet in a new tab
+* The *square button* (&rect;) collapses the button area
+* The *x button* (&#10006;) removes the section
 * The title bar can be used to drag the section for rearranging the order of the sections
 
 Upon successful load, the url in the sidebar textbox is saved as a document property. Currently, this is the only sidebar value saved. When the sidebar is reopened, the textbox is repopulated and the url is reloaded automatically. Loading an empty textbox will delete the saved url value from the document property.  

@@ -10,8 +10,10 @@
         $sectionDiv = $('<div class="sidebar-section">');
         $titleBar = $('<div class="sidebar-section-title-bar">');
         $title = $('<span class="sidebar-section-title">').text(data.name);
-        $toggle = $('<span class="sidebar-section-toggle">').text('=');
-        $close = $('<span class="sidebar-section-close">').text('x');
+        $link = $('<a>', { 'href': data.url, 'target': "_blank" }).text(" ↗");
+        $toggle = $('<span class="sidebar-section-toggle">').text('▭');
+        $close = $('<span class="sidebar-section-close">').text('✖');
+        $title.append($link);
         $titleBar.append($title);
         $titleBar.append($toggle);
         $titleBar.append($close);

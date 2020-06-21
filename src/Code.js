@@ -37,7 +37,7 @@ function showSidebar() {
   t.randomTablesUrl = randomTablesUrl;
 
   let ui = t.evaluate()
-    .setTitle('Random Tables')
+    .setTitle('Random Tables 1.1')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   DocumentApp.getUi().showSidebar(ui);
 }
