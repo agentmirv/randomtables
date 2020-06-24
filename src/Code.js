@@ -79,7 +79,7 @@ function loadSpreadsheetUrl(url) {
     let spreadsheet = SpreadsheetApp.openByUrl(url);
     let name = spreadsheet.getName();
     let sheet = spreadsheet.getSheetByName('Links');
-    if (sheet != null) {
+    if (sheet != null && sheet.getLastRow() > 0) {
       let range = sheet.getRange(1, 2, sheet.getLastRow());
       let values = range.getValues();
       for (let i = 1; i < values.length; i++) {
@@ -101,7 +101,9 @@ function getButtonData(url) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   let name = spreadsheet.getName();
   let sheet = spreadsheet.getSheetByName('Index');
-  if (sheet != null) {
+  let buttons = [];
+  
+  if (sheet != null && sheet.getLastRow() > 0) {
     let range = sheet.getRange(1, 1, sheet.getLastRow());
     let values = range.getValues();
     let buttons = [];
@@ -110,6 +112,8 @@ function getButtonData(url) {
     }
     return { url: url, name: name, buttons: buttons };
   }
+
+  return { url: url, name: name, buttons: buttons };
 }
 
 /**

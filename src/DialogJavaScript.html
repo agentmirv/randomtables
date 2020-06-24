@@ -35,7 +35,7 @@
         .withFailureHandler(
           function (msg, element) {
             // Respond to failure conditions here.
-            showStatus('Submit failed', 'error');
+            showStatus(msg, 'error');
             button.prop('disabled', false);
           })
         .withUserObject(this)

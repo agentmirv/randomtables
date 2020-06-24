@@ -6,7 +6,6 @@
 
     $("#sidebar-container").on("container:append", function (event, sectonData) {
       sectonData.sections.forEach(data => {
-      if (data.buttons.length > 0) {
         $sectionDiv = $('<div class="sidebar-section">');
         $titleBar = $('<div class="sidebar-section-title-bar">');
         $title = $('<span class="sidebar-section-title">').text(data.name);
@@ -34,7 +33,6 @@
         $toggle.on('click', function () {
           $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
         });
-      }
       });
     }).on("click", "button[data-id]", function () {
       var button = $(this);
