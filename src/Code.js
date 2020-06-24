@@ -30,8 +30,8 @@ function onInstall(e) {
  * project file.
  */
 function showSidebar() {
-  let userProperties = PropertiesService.getUserProperties();
-  let randomTablesUrl = userProperties.getProperty('randomTablesUrl') || "";
+  let documentProperties = PropertiesService.getDocumentProperties();
+  let randomTablesUrl = documentProperties.getProperty('randomTablesUrl') || "";
 
   let t = HtmlService.createTemplateFromFile('Sidebar')
   t.randomTablesUrl = randomTablesUrl;
@@ -49,12 +49,12 @@ function showSidebar() {
  * @returns {Object} The data used to draw the sidebar sections.
  */
 function handleLoadButton(url) {
-  let userProperties = PropertiesService.getUserProperties();
+  let documentProperties = PropertiesService.getDocumentProperties();
 
   if (url.trim() == "") {
-    userProperties.deleteProperty('randomTablesUrl');
+    documentProperties.deleteProperty('randomTablesUrl');
   } else {
-    userProperties.setProperty('randomTablesUrl', url);
+    documentProperties.setProperty('randomTablesUrl', url);
   }
 
   return loadSpreadsheetUrl(url);
