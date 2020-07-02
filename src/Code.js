@@ -192,11 +192,11 @@ function spreadsheetFunction(url, function_name) {
             input.input_type = inputRangeValidations[1][j].getCriteriaType();
             if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
               let criteria = inputRangeValidations[1][j].getCriteriaValues();
-              input.input_options = criteria[0];
+              input.input_options = criteria[0].filter(option => option.toString().trim().length > 0);
             } else if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE) {
               let criteria = inputRangeValidations[1][j].getCriteriaValues();
               let criteriaRange = criteria[0];
-              input.input_options = criteriaRange.getValues().flat();
+              input.input_options = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);
             }
           }
 
