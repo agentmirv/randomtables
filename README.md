@@ -120,7 +120,7 @@ The above public Google Drive folder contains the following example files.
 * A simple character sheet implemented as a spreadsheet with functions that perform specific common checks.
 
 **Dice (Google Sheet)**  
-* Several common dice rolls (some prompt for a multiplier), and an additional general dice roll where the number of sides can be specified.
+* Several common dice rolls and an additional general dice roll where the number of sides can be specified.
 
 **Rolls (Google Sheet)**  
 * A few generic dice roll checks from known games.
