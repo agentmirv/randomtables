@@ -106,11 +106,9 @@ function getButtonData(url) {
   if (sheet != null && sheet.getLastRow() > 0) {
     let range = sheet.getRange(1, 1, sheet.getLastRow());
     let values = range.getValues();
-    let buttons = [];
     for (let i = 1; i < values.length; i++) {
       buttons.push(values[i][0]);
     }
-    return { url: url, name: name, buttons: buttons };
   }
 
   return { url: url, name: name, buttons: buttons };
@@ -152,6 +150,19 @@ function addAtCursor(content) {
     let elementIndex = parent.getChildIndex(element);
     let cursorNew = DocumentApp.getActiveDocument().newPosition(parent, elementIndex + 1);
     DocumentApp.getActiveDocument().setCursor(cursorNew);
+  }
+}
+
+/**
+ * Handles the sidebar button click.
+ */
+function handleButtonClick(url, function_name) {
+  let selection = DocumentApp.getActiveDocument().getSelection();
+  if (selection) {
+    let ui = DocumentApp.getUi();
+    ui.alert('Selection Detected', 'Deselect the selected text and try again.', ui.ButtonSet.OK);
+  } else {
+    spreadsheetFunction(url, function_name);
   }
 }
 
