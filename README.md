@@ -22,19 +22,20 @@ The middleware connecting the two is Google App Script.
 
 ## What does this do?
 
-After this Add-on is installed, **Random Tables** appears under the Add-ons menu. Select the **Show sidebar** option under the **Random Tables** Add-on menu to show the sidebar.  In the sidebar, use the load control to load a Google Sheet from a url. The Google Sheet must follow the format below. After the load completes, the sidebar will be populated with buttons that call functions (random tables) in the Google Sheet, and write the result into the document.
+After this Add-on is installed in Google Docs, **Random Tables** appears under the Add-ons menu. Select the **Show sidebar** option under the **Random Tables** Add-on menu to show the sidebar.  In the sidebar, use the load control to load a Google Sheet from a URL. The Google Sheet must follow the format below. After the load completes, the sidebar will be populated with buttons that call functions (random tables) in the Google Sheet, and write the result into the document.
 
 Examples of buttons are: 
-1. Roll d20 - return a number between 1 and 20 
-2. Roll d6 - return a number between 1 and 6
+1. Roll d20 - return a random number between 1 and 20 
+2. Roll d6 - return a random number between 1 and 6
 3. Roll Treasure - return a random row from the Treasure table
 4. Oracle Roll - return the answer to a Yes/No question from the Oracle table
 
 Google Sheets is a very powerful tool, and not every function needs to employ a table. For example, the *Roll d20* button can use the RANDBETWEEN() Google Sheet function to generate a random number.  
 
+![](/images/screen1.png)
+
 These functions may take input from the user. If an input is defined for the function, the button will prompt the user with a dialog.  Google Sheet data validation for range and for list are supported and are rendered as a dropdown lists in the dialog.
 
-![](/images/screen1.png)
 ![](/images/dialog1.png)
 
 ## Google Sheet Format
@@ -50,8 +51,6 @@ Columns A to C contain the following data:
 * A - (required) the button text
 * B - (required) a string representing the (single) output cell, in A1 notation
 * C - (optional) a string representing the range of input cells, in A1 notation
-
-The input range is a range of two rows. The first row is the input label, the second row is the input value. Each column of the range represents a single input argument.  
 
 #### Index Sheet Example
 |      | A        | B            | C               |
@@ -70,6 +69,8 @@ In the above example, the button defined at row 2 will show the text *Roll d20*.
 | 4    | Roll               |       |
 | 5    | =RANDBETWEEN(1,20) |       |
 
+The input range is a range of two rows. The first row is the input label, the second row is the input value. Each column of the range represents a single input argument.  
+
 In the above example, the output cell is A1, where the formula builds an output string. The input takes a single parameter in the range A2:A3, where A2 is the input label and A3 is the input value. If there were an additional input parameters, they would start in the next column at B2:B3. 
 
 Upon successful load from the sidebar, a section of buttons is added to the sidebar with the section titled from the Google Sheet filename.  
@@ -80,13 +81,13 @@ The section title supports the following GUI operations:
 * The *x button* (&#10006;) removes the section
 * The title bar can be used to drag the section for rearranging the order of the sections
 
-Upon successful load, the url in the sidebar textbox is saved as a document property. Currently, this is the only sidebar value saved. When the sidebar is reopened, the textbox is repopulated and the url is reloaded automatically. Loading an empty textbox will delete the saved url value from the document property.  
+Upon successful load, the URL in the sidebar textbox is saved as a document property. Currently, this is the only sidebar value saved. When the sidebar is reopened, the textbox is repopulated and the URL is reloaded automatically. Loading an empty textbox will delete the saved URL value from the document property.  
 
 You may have several commonly used Google Sheets that you want to load as a group. This may be accomplished with a sheet named **Links**.
 
 ### Links Sheet
 
-When a Google Sheet url is loaded from the sidebar, a sheet named **Links** can be used to load one or more additional Google Sheet urls.  The first row is assumed to be a header and is skipped.  
+When a Google Sheet URL is loaded from the sidebar, a sheet named **Links** can be used to load one or more additional Google Sheet URLs.  The first row is assumed to be a header and is skipped.  
 
 #### Links Sheet Example
 |      | A        | B            | 
@@ -97,13 +98,13 @@ When a Google Sheet url is loaded from the sidebar, a sheet named **Links** can 
 
 Columns A to B contain the following data:  
 * A - (optional) a descriptive name
-* B - (required) a string url of a Google Sheet
+* B - (required) a string URL of a Google Sheet
 
-If any of the additional Google Sheet urls have their own **Links** sheets, these are not loaded. Only the **Links** sheet of Google Sheet url loaded directly from the sidebar will be loaded.  
+If any of the additional Google Sheet URLs have their own **Links** sheets, these are not loaded. Only the **Links** sheet of Google Sheet URL loaded directly from the sidebar will be loaded.  
 
 ## How do I use this?
 
-This is now available as a Google Doc Add-on in the G Suite Marketplace.
+Random Tables is now available as a Google Doc Add-on in the G Suite Marketplace.
 
 #### G Suite Marketplace (option 1)
 https://gsuite.google.com/marketplace/app/appname/645649794340
@@ -113,7 +114,7 @@ For examples of Google Sheets that implement the format above, see the **Random 
 **Random Tables Examples**   
 https://drive.google.com/drive/folders/1S30zpuHb1cNiS0uHXMJoq-lLDELhLQrB?usp=sharing
 
-To use these files, select them all and use the **Make a copy** option to make copies to your Google Drive. Then use your copies of the files.
+To use these files, select them all and use the **Make a copy** option to make copies to your own Google Drive. Then use your copies of the files.
 
 The above public Google Drive folder contains the following example files.
 
