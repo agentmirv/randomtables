@@ -30,15 +30,18 @@ function onInstall(e) {
  * project file.
  */
 function showSidebar() {
+  // Get randomTablesUrl from DocumentProperties
   let documentProperties = PropertiesService.getDocumentProperties();
   let randomTablesUrl = documentProperties.getProperty('randomTablesUrl') || "";
 
+  // Load Sidebar
   let t = HtmlService.createTemplateFromFile('Sidebar')
   t.randomTablesUrl = randomTablesUrl;
 
   let ui = t.evaluate()
     .setTitle('Random Tables 1.1')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+
   DocumentApp.getUi().showSidebar(ui);
 }
 
@@ -49,6 +52,7 @@ function showSidebar() {
  * @returns {Object} The data used to draw the sidebar sections.
  */
 function handleLoadButton(url) {
+  // Update randomTablesUrl DocumentProperties
   let documentProperties = PropertiesService.getDocumentProperties();
 
   if (url.trim() == "") {
@@ -57,6 +61,7 @@ function handleLoadButton(url) {
     documentProperties.setProperty('randomTablesUrl', url);
   }
 
+  // Return the sidebar data
   return loadSpreadsheetUrl(url);
 }
 
@@ -68,101 +73,87 @@ function handleLoadButton(url) {
  * @returns {Object} The data used to draw the sidebar sections.
  */
 function loadSpreadsheetUrl(url) {
+  // Build the sidebar data
   let data = { sections: [] };
 
   if (url.trim() != "") {
-    let section = getButtonData(url);
-    if (section != null) {
-      data.sections.push(getButtonData(url));
-    }
+    // Load spreadsheet URLs from the Links sheet
+    let loadUrls = loadLinksSheet(url);
+    // Prepend the original spreadsheet URL
+    loadUrls.unshift(url);
 
-    let spreadsheet = SpreadsheetApp.openByUrl(url);
-    let name = spreadsheet.getName();
-    let sheet = spreadsheet.getSheetByName('Links');
-    if (sheet != null && sheet.getLastRow() > 0) {
-      let range = sheet.getRange(1, 2, sheet.getLastRow());
-      let values = range.getValues();
-      for (let i = 1; i < values.length; i++) {
-        data.sections.push(getButtonData(values[i][0]));
-      }
-    }
+    // Load each spreadsheet URL and process Index sheet into a sidebar section
+    loadUrls.forEach(loadUrl => {
+      let section = loadIndexSheet(loadUrl);
+      data.sections.push(section);
+    });
   }
 
   return data;
 }
 
 /**
- * Loads the spreadsheet url and processes the Button sheet.
+ * Loads the spreadsheet url and processes the Links sheet.
+ *
+ * @param {string} url The event of the spreadsheet url.
+ * @returns {Array} The additional spreadsheet urls to load. 
+ */
+function loadLinksSheet(url) {
+  let urls = [];
+  let spreadsheet = SpreadsheetApp.openByUrl(url);
+  let sheet = spreadsheet.getSheetByName('Links');
+
+  if (sheet != null && sheet.getLastRow() > 0) {
+    // Load URL string at Column 2
+    let range = sheet.getRange(1, 2, sheet.getLastRow());
+    let values = range.getValues();
+    for (let i = 1; i < values.length; i++) {
+      let linksUrl = values[i][0];
+      urls.push(linksUrl);
+    }
+  }
+
+  return urls;
+}
+
+/**
+ * Loads the spreadsheet url and processes the Index sheet.
  *
  * @param {string} url The event of the spreadsheet url.
  * @returns {Object} The data used to draw a single sidebar section. 
  */
-function getButtonData(url) {
+function loadIndexSheet(url) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   let name = spreadsheet.getName();
+  let section = { url: url, name: name, buttons: [] };
+
   let sheet = spreadsheet.getSheetByName('Index');
-  let buttons = [];
-  
   if (sheet != null && sheet.getLastRow() > 0) {
+    // Load Button text at Column 1
     let range = sheet.getRange(1, 1, sheet.getLastRow());
     let values = range.getValues();
     for (let i = 1; i < values.length; i++) {
-      buttons.push(values[i][0]);
+      let buttonText = values[i][0];
+      section.buttons.push(buttonText);
     }
   }
 
-  return { url: url, name: name, buttons: buttons };
+  return section;
 }
 
 /**
- * Opens a dialog. The dialog structure is described in the Dialog.html
- * project file.
+ * Handles the section button click.
  * 
- * @param {string} url The event of the spreadsheet url.
- * @param {string} function_name The function name, the first column of the Index sheet.
- * @param {Object} inputs The object representing the inputs to be rendered on the Dialog.
+ * @param {string} url The event of the spreadsheet url. 
+ * @param {string} functionName The button text in the Index sheet. 
  */
-function showDialog(url, function_name, inputs) {
-  let t = HtmlService.createTemplateFromFile('Dialog');
-  t.url = url;
-  t.function_name = function_name;
-  t.inputs = inputs;
-
-  let rowHeight = 34;
-  let ui = t.evaluate()
-    .setWidth(400)
-    .setHeight((inputs.length * rowHeight) + (3 * rowHeight))
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-
-  DocumentApp.getUi().showModalDialog(ui, function_name);
-}
-
-/**
- * Adds content at the cursor position. 
- * 
- * @param {string} content The text to be written at the cursor position.
- */
-function addAtCursor(content) {
-  let cursor = DocumentApp.getActiveDocument().getCursor();
-  if (cursor) {
-    let element = cursor.insertText(content);
-    let parent = element.getParent();
-    let elementIndex = parent.getChildIndex(element);
-    let cursorNew = DocumentApp.getActiveDocument().newPosition(parent, elementIndex + 1);
-    DocumentApp.getActiveDocument().setCursor(cursorNew);
-  }
-}
-
-/**
- * Handles the sidebar button click.
- */
-function handleButtonClick(url, function_name) {
+function handleSectionButtonClick(url, functionName) {
   let selection = DocumentApp.getActiveDocument().getSelection();
   if (selection) {
     let ui = DocumentApp.getUi();
     ui.alert('Selection Detected', 'Deselect the selected text and try again.', ui.ButtonSet.OK);
   } else {
-    spreadsheetFunction(url, function_name);
+    spreadsheetFunction(url, functionName);
   }
 }
 
@@ -171,61 +162,114 @@ function handleButtonClick(url, function_name) {
  * shows the Dialog or processes the output.
  * 
  * @param {string} url The event of the spreadsheet url.
- * @param {string} function_name The function name, the first column of the Index sheet.
+ * @param {string} functionName The function name, the first column of the Index sheet.
  */
-function spreadsheetFunction(url, function_name) {
-  let ui = DocumentApp.getUi();
+function spreadsheetFunction(url, functionName) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   let indexSheet = spreadsheet.getSheetByName('Index');
-  let indexRange = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3);
-  let indexValues = indexRange.getValues();
+  let indexValues = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3).getValues();
 
-  for (let i = 0; i < indexValues.length; i++) {
-    if (function_name == indexValues[i][0]) {
-      let output_cell = indexValues[i][1];
-      let input_cell = indexValues[i][2];
+  let selectedFunction = indexValues.filter(indexEntry => functionName == indexEntry[0]);
 
-      if (input_cell != "") {
-        // Get inputs 
-        let inputs = [];
-        let inputRange = spreadsheet.getRange(input_cell);
-        let inputRangeValues = inputRange.getValues();
-        let inputRangeValidations = inputRange.getDataValidations();
+  if (selectedFunction.length > 0) {
+    let [, output_cell, input_cell] = selectedFunction[0];
+    
+    if (input_cell != "") {
+      // Show Input Dialog
+      let dialogInputs = getDialogInputs(spreadsheet, input_cell);
+      showDialog(url, functionName, dialogInputs);
 
-        for (let j = 0; j < inputRangeValues[0].length; j++) {
-          let input = {
-            input_help: inputRangeValues[0][j],
-            default_value: inputRangeValues[1][j],
-            input_range: inputRange.getCell(2, j + 1).getA1Notation()
-          };
+    } else {
+      // Cycle random sheet functions
+      let temp = spreadsheet.getRange('A1').getValue();
+      spreadsheet.getRange('A1').setValue(temp);
 
-          if (inputRangeValidations[1][j] != null) {
-            input.input_type = inputRangeValidations[1][j].getCriteriaType();
-            if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
-              let criteria = inputRangeValidations[1][j].getCriteriaValues();
-              input.input_options = criteria[0].filter(option => option.toString().trim().length > 0);
-            } else if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE) {
-              let criteria = inputRangeValidations[1][j].getCriteriaValues();
-              let criteriaRange = criteria[0];
-              input.input_options = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);
-            }
-          }
-
-          inputs.push(input);
-        }
-
-        showDialog(url, function_name, inputs);
-      } else {
-        // Cycle random sheet functions
-        let temp = spreadsheet.getRange('A1').getValue();
-        spreadsheet.getRange('A1').setValue(temp);
-
-        let output = spreadsheet.getRange(output_cell).getValue();
-        addAtCursor(`${output}\n`);
-      }
-
-      break;
+      // Write Output to Doc
+      let output = spreadsheet.getRange(output_cell).getValue();
+      addAtCursor(`${output}\n`);
     }
+  }
+}
+
+/**
+ * Gets the dialog input data for the function input range
+ * 
+ * @returns {Array} The data used to draw a list of dialog inputs.  
+ */
+function getDialogInputs(spreadsheet, inputCell){
+  let dialogInputs = [];
+  let inputRange = spreadsheet.getRange(inputCell);
+  let inputRangeValues = inputRange.getValues();
+  let inputRangeValidations = inputRange.getDataValidations();
+
+  for (let j = 0; j < inputRange.getNumColumns(); j++) {
+    let input = {
+      input_help: inputRangeValues[0][j],
+      default_value: inputRangeValues[1][j],
+      // getCell column index starts at 1
+      // This is the A1 Notation of the default_value cell
+      input_range: inputRange.getCell(2, j + 1).getA1Notation()
+    };
+
+    // Process the input range valudations for the default_value cell
+    // Set input.input_options
+    if (inputRangeValidations[1][j] != null) {
+      input.input_type = inputRangeValidations[1][j].getCriteriaType();
+      if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
+        let criteria = inputRangeValidations[1][j].getCriteriaValues();
+        input.input_options = criteria[0].filter(option => option.toString().trim().length > 0);
+      } else if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE) {
+        let criteria = inputRangeValidations[1][j].getCriteriaValues();
+        let criteriaRange = criteria[0];
+        input.input_options = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);
+      }
+    }
+
+    dialogInputs.push(input);
+  }
+
+  return dialogInputs;
+}
+
+/**
+ * Opens a dialog. The dialog structure is described in the Dialog.html
+ * project file.
+ * 
+ * @param {string} url The event of the spreadsheet url.
+ * @param {string} functionName The function name, the first column of the Index sheet.
+ * @param {Object} inputs The object representing the inputs to be rendered on the Dialog.
+ */
+function showDialog(url, functionName, inputs) {
+  let t = HtmlService.createTemplateFromFile('Dialog');
+  t.url = url;
+  t.function_name = functionName;
+  t.inputs = inputs;
+
+  let rowHeight = 34;
+  let ui = t.evaluate()
+    .setWidth(400)
+    .setHeight((inputs.length * rowHeight) + (3 * rowHeight))
+    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+
+  DocumentApp.getUi().showModalDialog(ui, functionName);
+}
+
+/**
+ * Adds content at the cursor position. 
+ * 
+ * @param {string} content The text to be written at the cursor position.
+ */
+function addAtCursor(content) {
+  let document = DocumentApp.getActiveDocument();
+  let cursor = document.getCursor();
+  if (cursor) {
+    // Insert text into document
+    let element = cursor.insertText(content);
+    // Move cursor accordingly
+    let parent = element.getParent();
+    let elementIndex = parent.getChildIndex(element);
+    let cursorNew = document.newPosition(parent, elementIndex + 1);
+    document.setCursor(cursorNew);
   }
 }
 
@@ -236,29 +280,28 @@ function spreadsheetFunction(url, function_name) {
  * @param {Object} data The object representing data submitted from the Dialog form. 
  */
 function submitDialog(data) {
-  let ui = DocumentApp.getUi();
   let spreadsheet = SpreadsheetApp.openByUrl(data.url);
   let indexSheet = spreadsheet.getSheetByName('Index');
-  let indexRange = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3);
-  let indexValues = indexRange.getValues();
+  let indexValues = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3).getValues();
 
-  for (let i = 0; i < indexValues.length; i++) {
-    if (data.function_name == indexValues[i][0]) {
-      let output_cell = indexValues[i][1];
-      let input_cell = indexValues[i][2];
-      let inputRange = spreadsheet.getRange(input_cell);
-      let inputRangeValues = inputRange.getValues();
+  let selectedFunction = indexValues.filter(indexEntry => data.function_name == indexEntry[0]);
 
-      for (let j = 0; j < inputRangeValues[0].length; j++) {
+  if (selectedFunction.length > 0) {
+    let [, output_cell, input_cell] = selectedFunction[0];  
+    let inputRange = spreadsheet.getRange(input_cell);
+
+    // Set the Inputs
+    for (let j = 0; j < inputRange.getNumColumns(); j++) {
+        // This is the cell containing the default_value
         let cell = inputRange.getCell(2, j + 1);
         let key = cell.getA1Notation();
         if (key in data.input) {
           cell.setValue(data.input[key])
         }
-      }
-
-      let output = spreadsheet.getRange(output_cell).getValue();
-      addAtCursor(`${output}\n`);
     }
+
+    // Get the Output
+    let output = spreadsheet.getRange(output_cell).getValue();
+    addAtCursor(`${output}\n`);
   }
 }
