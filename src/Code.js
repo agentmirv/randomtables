@@ -185,8 +185,12 @@ function spreadsheetFunction(url, functionName) {
       spreadsheet.getRange('A1').setValue(temp);
 
       // Write Output to Doc
-      let output = spreadsheet.getRange(output_cell).getValue();
-      addAtCursor(`${output}\n`);
+      try {
+        let output = spreadsheet.getRange(output_cell).getValue();
+        addAtCursor(`${output}\n`);
+      } catch (error) {
+        throw new Error(`Output [${output_cell}]: ${error}`);
+      }
     }
   }
 }
@@ -198,7 +202,11 @@ function spreadsheetFunction(url, functionName) {
  */
 function getDialogInputs(spreadsheet, inputCell){
   let dialogInputs = [];
-  let inputRange = spreadsheet.getRange(inputCell);
+  try {
+    var inputRange = spreadsheet.getRange(inputCell);
+  } catch (error) {
+    throw new Error(`Input [${inputCell}]: ${error}`);
+  }
   let inputRangeValues = inputRange.getValues();
   let inputRangeValidations = inputRange.getDataValidations();
 
@@ -300,8 +308,12 @@ function submitDialog(data) {
         }
     }
 
-    // Get the Output
-    let output = spreadsheet.getRange(output_cell).getValue();
-    addAtCursor(`${output}\n`);
+    // Write Output to Doc
+    try {
+      let output = spreadsheet.getRange(output_cell).getValue();
+      addAtCursor(`${output}\n`);
+    } catch (error) {
+      throw new Error(`Output [${output_cell}]: ${error}`);
+    }
   }
 }
