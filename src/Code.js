@@ -296,7 +296,12 @@ function submitDialog(data) {
 
   if (selectedFunction.length > 0) {
     let [, output_cell, input_cell] = selectedFunction[0];  
-    let inputRange = spreadsheet.getRange(input_cell);
+
+    try {
+      var inputRange = spreadsheet.getRange(input_cell);
+    } catch (error) {
+      throw new Error(`Input [${inputCell}]: ${error}`);
+    }
 
     // Set the Inputs
     for (let j = 0; j < inputRange.getNumColumns(); j++) {
