@@ -48,7 +48,7 @@ function showSidebar() {
 /**
  * Handles the load button click.
  *
- * @param {string} url The event of the spreadsheet url.
+ * @param {string} url The spreadsheet url.
  * @returns {Object} The data used to draw the sidebar sections.
  */
 function handleLoadButton(url) {
@@ -69,7 +69,7 @@ function handleLoadButton(url) {
  * Loads the spreadsheet from the url (Buttons sheet)
  * Also processes the Links sheet.
  *
- * @param {string} url The event of the spreadsheet url.
+ * @param {string} url The spreadsheet url.
  * @returns {Object} The data used to draw the sidebar sections.
  */
 function loadSpreadsheetUrl(url) {
@@ -93,7 +93,7 @@ function loadSpreadsheetUrl(url) {
 /**
  * Loads the spreadsheet url and processes the Links sheet.
  *
- * @param {string} url The event of the spreadsheet url.
+ * @param {string} url The spreadsheet url.
  * @returns {Array} The additional spreadsheet urls to load. 
  */
 function loadLinksSheet(url) {
@@ -117,7 +117,7 @@ function loadLinksSheet(url) {
 /**
  * Loads the spreadsheet url and processes the Index sheet.
  *
- * @param {string} url The event of the spreadsheet url.
+ * @param {string} url The spreadsheet url.
  * @returns {Object} The data used to draw a single sidebar section. 
  */
 function loadIndexSheet(url) {
@@ -142,7 +142,7 @@ function loadIndexSheet(url) {
 /**
  * Handles the section button click.
  * 
- * @param {string} url The event of the spreadsheet url. 
+ * @param {string} url The spreadsheet url. 
  * @param {string} functionName The button text in the Index sheet. 
  */
 function handleSectionButtonClick(url, functionName) {
@@ -159,7 +159,7 @@ function handleSectionButtonClick(url, functionName) {
  * Processes the function in the spreadsheet and 
  * shows the Dialog or processes the output.
  * 
- * @param {string} url The event of the spreadsheet url.
+ * @param {string} url The spreadsheet url.
  * @param {string} functionName The function name, the first column of the Index sheet.
  */
 function spreadsheetFunction(url, functionName) {
@@ -191,7 +191,9 @@ function spreadsheetFunction(url, functionName) {
 /**
 ]* Gets the dialog input data for the function input range
  * 
- * @returns {Array} The data used to draw a list of dialog inputs.  
+ * @param {Object} spreadsheet The spreadsheet containing the input range.
+ * @param {string} inputCell The input cell in A1 notation.
+ * @returns {Array} The list of dialog input data.  
  */
 function getDialogInputs(spreadsheet, inputCell) {
   let dialogInputs = [];
@@ -236,7 +238,7 @@ function getDialogInputs(spreadsheet, inputCell) {
  * Opens a dialog. The dialog structure is described in the Dialog.html
  * project file.
  * 
- * @param {string} url The event of the spreadsheet url.
+ * @param {string} url The spreadsheet url.
  * @param {string} functionName The function name, the first column of the Index sheet.
  * @param {Object} inputs The object representing the inputs to be rendered on the Dialog.
  */
