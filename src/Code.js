@@ -39,7 +39,7 @@ function showSidebar() {
   t.randomTablesUrl = randomTablesUrl;
 
   let ui = t.evaluate()
-    .setTitle('Random Tables 2.0')
+    .setTitle('Random Tables 1.2')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 
   DocumentApp.getUi().showSidebar(ui);
@@ -77,10 +77,8 @@ function loadSpreadsheetUrl(url) {
   let data = { sections: [] };
 
   if (url.trim() != "") {
-    // Load spreadsheet URLs from the Links sheet
+    // Starting with the original url, append the urls on the Links sheet
     let loadUrls = loadLinksSheet(url);
-    // Prepend the original spreadsheet URL
-    loadUrls.unshift(url);
 
     // Load each spreadsheet URL and process Index sheet into a sidebar section
     loadUrls.forEach(loadUrl => {
@@ -99,7 +97,7 @@ function loadSpreadsheetUrl(url) {
  * @returns {Array} The additional spreadsheet urls to load. 
  */
 function loadLinksSheet(url) {
-  let urls = [];
+  let urls = [url];
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   let sheet = spreadsheet.getSheetByName('Links');
 
@@ -319,7 +317,7 @@ function addContentAtCursor(spreadsheet, outputCell) {
           } catch (error) {
             throw new Error(`ImageURL [${outputValue}]: ${error}`);
           }
-        }      
+        }
       }
       
       // Output Cell detected or invalid Output Range type
