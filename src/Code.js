@@ -167,11 +167,11 @@ function spreadsheetFunction(url, functionName) {
   let indexSheet = spreadsheet.getSheetByName('Index');
   let indexValues = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3).getValues();
 
-  let selectedFunction = indexValues.filter(indexEntry => functionName == indexEntry[0]);
+  let selectedFunction = indexValues.find(indexEntry => functionName == indexEntry[0]);
 
-  if (selectedFunction.length > 0) {
-    let [, output_cell, input_cell] = selectedFunction[0];
-    
+  if (selectedFunction) {
+    let [, output_cell, input_cell] = selectedFunction;
+
     if (input_cell != "") {
       // Show Input Dialog
       let dialogInputs = getDialogInputs(spreadsheet, input_cell);
@@ -193,7 +193,7 @@ function spreadsheetFunction(url, functionName) {
  * 
  * @returns {Array} The data used to draw a list of dialog inputs.  
  */
-function getDialogInputs(spreadsheet, inputCell){
+function getDialogInputs(spreadsheet, inputCell) {
   let dialogInputs = [];
   try {
     var inputRange = spreadsheet.getRange(inputCell);
@@ -266,10 +266,10 @@ function submitDialog(data) {
   let indexSheet = spreadsheet.getSheetByName('Index');
   let indexValues = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3).getValues();
 
-  let selectedFunction = indexValues.filter(indexEntry => data.function_name == indexEntry[0]);
+  let selectedFunction = indexValues.find(indexEntry => data.function_name == indexEntry[0]);
 
-  if (selectedFunction.length > 0) {
-    let [, output_cell, input_cell] = selectedFunction[0];  
+  if (selectedFunction) {
+    let [, output_cell, input_cell] = selectedFunction;
 
     try {
       var inputRange = spreadsheet.getRange(input_cell);
@@ -279,12 +279,12 @@ function submitDialog(data) {
 
     // Set the Inputs
     for (let j = 0; j < inputRange.getNumColumns(); j++) {
-        // This is the cell containing the default_value
-        let cell = inputRange.getCell(2, j + 1);
-        let key = cell.getA1Notation();
-        if (key in data.input) {
-          cell.setValue(data.input[key])
-        }
+      // This is the cell containing the default_value
+      let cell = inputRange.getCell(2, j + 1);
+      let key = cell.getA1Notation();
+      if (key in data.input) {
+        cell.setValue(data.input[key])
+      }
     }
 
     // Write Output to Doc
@@ -309,7 +309,9 @@ function addContentAtCursor(spreadsheet, outputCell) {
 
       // Output Range detected
       if (outputRange.getNumRows() == 2) {
-        let [outputType, outputValue ] = outputRange.getValues();
+        // Support only one output column
+        outputRange = outputRange.offset(0, 0, 2, 1);
+        let [outputType, outputValue] = outputRange.getValues();
         if (outputType == 'imageurl') {
           try {
             let outputImageBlob = UrlFetchApp.fetch(outputValue).getBlob();
@@ -319,13 +321,13 @@ function addContentAtCursor(spreadsheet, outputCell) {
           }
         }
       }
-      
+
       // Output Cell detected or invalid Output Range type
       if (!elementInserted) {
         let outputValue = outputRange.getValue();
         elementInserted = cursor.insertText(outputValue);
       }
-      
+
       // Move cursor accordingly
       let parent = elementInserted.getParent();
       let elementIndex = parent.getChildIndex(elementInserted);
@@ -334,7 +336,7 @@ function addContentAtCursor(spreadsheet, outputCell) {
 
     } catch (error) {
       throw new Error(`Output [${outputCell}]: ${error}`);
-    }  
+    }
   }
 }
 
