@@ -39,7 +39,7 @@ function showSidebar() {
   t.randomTablesUrl = randomTablesUrl;
 
   let ui = t.evaluate()
-    .setTitle('Random Tables 1.1')
+    .setTitle('Random Tables 2.0')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 
   DocumentApp.getUi().showSidebar(ui);
@@ -185,18 +185,13 @@ function spreadsheetFunction(url, functionName) {
       spreadsheet.getRange('A1').setValue(temp);
 
       // Write Output to Doc
-      try {
-        let output = spreadsheet.getRange(output_cell).getValue();
-        addAtCursor(`${output}\n`);
-      } catch (error) {
-        throw new Error(`Output [${output_cell}]: ${error}`);
-      }
+      addContentAtCursor(spreadsheet, output_cell);
     }
   }
 }
 
 /**
- * Gets the dialog input data for the function input range
+]* Gets the dialog input data for the function input range
  * 
  * @returns {Array} The data used to draw a list of dialog inputs.  
  */
@@ -263,25 +258,6 @@ function showDialog(url, functionName, inputs) {
 }
 
 /**
- * Adds content at the cursor position. 
- * 
- * @param {string} content The text to be written at the cursor position.
- */
-function addAtCursor(content) {
-  let document = DocumentApp.getActiveDocument();
-  let cursor = document.getCursor();
-  if (cursor) {
-    // Insert text into document
-    let element = cursor.insertText(content);
-    // Move cursor accordingly
-    let parent = element.getParent();
-    let elementIndex = parent.getChildIndex(element);
-    let cursorNew = document.newPosition(parent, elementIndex + 1);
-    document.setCursor(cursorNew);
-  }
-}
-
-/**
  * Processes the submit of the Dialog, calling the spreadsheet function
  * and processes the output.
  * 
@@ -314,11 +290,53 @@ function submitDialog(data) {
     }
 
     // Write Output to Doc
-    try {
-      let output = spreadsheet.getRange(output_cell).getValue();
-      addAtCursor(`${output}\n`);
-    } catch (error) {
-      throw new Error(`Output [${output_cell}]: ${error}`);
-    }
+    addContentAtCursor(spreadsheet, output_cell);
   }
 }
+
+/**
+ * Writes content at the cursor position. 
+ * 
+ * @param {Object} spreadsheet The spreadsheet containing the output range. 
+ * @param {string} outputCell The output cell in A1 notation.
+ */
+function addContentAtCursor(spreadsheet, outputCell) {
+  let document = DocumentApp.getActiveDocument();
+  let cursor = document.getCursor();
+  let elementInserted = null;
+
+  if (cursor) {
+    try {
+      let outputRange = spreadsheet.getRange(outputCell);
+
+      // Output Range detected
+      if (outputRange.getNumRows() == 2) {
+        let [outputType, outputValue ] = outputRange.getValues();
+        if (outputType == 'imageurl') {
+          try {
+            let outputImageBlob = UrlFetchApp.fetch(outputValue).getBlob();
+            elementInserted = cursor.insertInlineImage(outputImageBlob);
+          } catch (error) {
+            throw new Error(`ImageURL [${outputValue}]: ${error}`);
+          }
+        }      
+      }
+      
+      // Output Cell detected or invalid Output Range type
+      if (!elementInserted) {
+        let outputValue = outputRange.getValue();
+        elementInserted = cursor.insertText(outputValue);
+      }
+      
+      // Move cursor accordingly
+      let parent = elementInserted.getParent();
+      let elementIndex = parent.getChildIndex(elementInserted);
+      let cursorNew = document.newPosition(parent, elementIndex + 1);
+      document.setCursor(cursorNew);
+
+    } catch (error) {
+      throw new Error(`Output [${outputCell}]: ${error}`);
+    }  
+  }
+}
+
