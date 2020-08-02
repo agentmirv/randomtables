@@ -1,42 +1,19 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
 
 <script>
   $(function () {
 
-    $("#sidebar-container").on("container:append", function (event, sectonData) {
-      sectonData.sections.forEach(data => {
-        $sectionDiv = $('<div class="sidebar-section">');
-        $titleBar = $('<div class="sidebar-section-title-bar">');
-        $title = $('<span class="sidebar-section-title">').text(data.name);
-        $link = $('<a>', { 'href': data.url, 'target': "_blank" }).text(" ↗");
-        $toggle = $('<span class="sidebar-section-toggle">');
-        if (data.buttons.length > 0) {
-          $toggle.text('▭');
-        }
-        $close = $('<span class="sidebar-section-close">').text('✖');
-        $title.append($link);
-        $titleBar.append($title);
-        $titleBar.append($toggle);
-        $titleBar.append($close);
-        $sectionDiv.append($titleBar)
-        $buttonContainer = $('<span class="sidebar-section-container">');
-        $sectionDiv.append($buttonContainer)
-        for (var i = 0; i < data.buttons.length; i++) {
-          $buttonDiv = $('<div class="block">');
-          $button = $('<button>', { class: 'action', 'data-url': data.url, 'data-id': data.buttons[i] }).text(data.buttons[i]);
-          $buttonDiv.append($button);
-          $buttonContainer.append($buttonDiv);
-        }
-        $(this).append($sectionDiv);
+    $("#sidebar-container").on("container:append", function (event, sectionData) {
+      $("#sidebarSectionTemplate").tmpl(sectionData.sections).appendTo("#sidebar-container");
 
-        $close.on('click', function () {
-          $(this).closest( ".sidebar-section" ).remove();
-        });
-        $toggle.on('click', function () {
-          $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
-        });
-      });
+    }).on("click", ".sidebar-section-close", function () {
+      $(this).closest( ".sidebar-section" ).remove();
+
+    }).on("click", ".sidebar-section-toggle", function () {
+      $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
+
     }).on("click", "button[data-id]", function () {
       var button = $(this);
       button.prop('disabled', true);
