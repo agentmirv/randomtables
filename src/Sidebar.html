@@ -20,6 +20,27 @@
 
   <div class="sidebar bottom"></div>
 
+  <script id="sidebarSectionTemplate" type="text/x-jsrender">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title-bar">
+        <span class="sidebar-section-title">{{:name}}<a
+            href="{{:url}}"
+            target="_blank"> ↗</a></span>
+        {{if buttons.length > 0}}
+          <span class="sidebar-section-toggle">▭</span>
+        {{/if}}            
+        <span class="sidebar-section-close">✖</span>
+      </div>
+      <span class="sidebar-section-container">
+      {{for buttons ~buttonUrl=url}}
+        <div class="block"><button class="action"
+            data-url="{{:~buttonUrl}}"
+            data-id="{{:}}">{{:}}</button></div>
+      {{/for}}        
+      </span>
+    </div>
+  </script>  
+
   <!-- Use a templated HTML printing scriptlet to import JavaScript -->
   <?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>
 </body>

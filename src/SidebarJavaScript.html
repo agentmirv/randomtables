@@ -1,42 +1,21 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.11/jsrender.min.js" integrity="sha512-bKlNlbTH3duwZ28zoqEhXui/yuaPuQVci6OAVu0zh2WfYbEKD39HszVR8byP4/L4YyBo3b5CGIY+4ldVN93uCg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
   $(function () {
 
-    $("#sidebar-container").on("container:append", function (event, sectonData) {
-      sectonData.sections.forEach(data => {
-        $sectionDiv = $('<div class="sidebar-section">');
-        $titleBar = $('<div class="sidebar-section-title-bar">');
-        $title = $('<span class="sidebar-section-title">').text(data.name);
-        $link = $('<a>', { 'href': data.url, 'target': "_blank" }).text(" ↗");
-        $toggle = $('<span class="sidebar-section-toggle">');
-        if (data.buttons.length > 0) {
-          $toggle.text('▭');
-        }
-        $close = $('<span class="sidebar-section-close">').text('✖');
-        $title.append($link);
-        $titleBar.append($title);
-        $titleBar.append($toggle);
-        $titleBar.append($close);
-        $sectionDiv.append($titleBar)
-        $buttonContainer = $('<span class="sidebar-section-container">');
-        $sectionDiv.append($buttonContainer)
-        for (var i = 0; i < data.buttons.length; i++) {
-          $buttonDiv = $('<div class="block">');
-          $button = $('<button>', { class: 'action', 'data-url': data.url, 'data-id': data.buttons[i] }).text(data.buttons[i]);
-          $buttonDiv.append($button);
-          $buttonContainer.append($buttonDiv);
-        }
-        $(this).append($sectionDiv);
+    $("#sidebar-container").on("container:append", function (event, sectionData) {
+      var template = $.templates("#sidebarSectionTemplate");
+      var htmlOutput = template.render(sectionData.sections);
+      $("#sidebar-container").html(htmlOutput);      
 
-        $close.on('click', function () {
-          $(this).closest( ".sidebar-section" ).remove();
-        });
-        $toggle.on('click', function () {
-          $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
-        });
-      });
+    }).on("click", ".sidebar-section-close", function () {
+      $(this).closest( ".sidebar-section" ).remove();
+
+    }).on("click", ".sidebar-section-toggle", function () {
+      $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
+      
     }).on("click", "button[data-id]", function () {
       var button = $(this);
       button.prop('disabled', true);
