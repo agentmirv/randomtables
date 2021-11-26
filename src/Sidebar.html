@@ -11,8 +11,7 @@
 
   <div class="sidebar branding-below">
     <div id="sidebar-load-bar">
-      <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL"
-        value="<?=randomTablesUrl?>">
+      <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" value="<?=randomTablesUrl?>">
       <button class="action sidebar-load-button" id="sidebar-load-button">Load</button>
     </div>
     <div id="sidebar-status"></div>
@@ -22,23 +21,23 @@
   <div class="sidebar bottom"></div>
 
   <!-- JQuery Templates -->
-  <script id="sidebarSectionTemplate" type="text/x-jquery-tmpl">
+  <script id="sidebarSectionTemplate" type="text/x-jsrender">
     <div class="sidebar-section">
       <div class="sidebar-section-title-bar">
-        <span class="sidebar-section-title">${name}<a
-            href="${url}"
+        <span class="sidebar-section-title">{{:name}}<a
+            href="{{:url}}"
             target="_blank"> ↗</a></span>
-      {{if buttons.length > 0}}
-        <span class="sidebar-section-toggle">▭</span>
-      {{/if}}
+        {{if buttons.length > 0}}
+          <span class="sidebar-section-toggle">▭</span>
+        {{/if}}            
         <span class="sidebar-section-close">✖</span>
       </div>
       <span class="sidebar-section-container">
-      {{each buttons}}
+      {{for buttons ~buttonUrl=url}}
         <div class="block"><button class="action"
-            data-url="${url}"
-            data-id="${$value}">${$value}</button></div>
-      {{/each}}
+            data-url="{{:~buttonUrl}}"
+            data-id="{{:}}">{{:}}</button></div>
+      {{/for}}        
       </span>
     </div>
   </script>

@@ -1,12 +1,14 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.11/jsrender.min.js"></script>
 
 <script>
   $(function () {
 
     $("#sidebar-container").on("container:append", function (event, sectionData) {
-      $("#sidebarSectionTemplate").tmpl(sectionData.sections).appendTo("#sidebar-container");
+      var template = $.templates("#sidebarSectionTemplate");
+      var htmlOutput = template.render(sectionData.sections);
+      $("#sidebar-container").html(htmlOutput);      
 
     }).on("click", ".sidebar-section-close", function () {
       $(this).closest( ".sidebar-section" ).remove();
@@ -62,7 +64,7 @@
           })
         .handleLoadButton(url);
     });
-    
+
     $("#sidebar-load-button").trigger("click");
   });
 
