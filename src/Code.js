@@ -33,6 +33,8 @@ function showSidebar() {
   // Get randomTablesUrl from DocumentProperties
   let randomTablesUrl = loadRandomTablesUrl();
 
+  console.info({ name: "showSidebar", randomTablesUrl: randomTablesUrl });
+
   // Load Sidebar
   let t = HtmlService.createTemplateFromFile('Sidebar')
   t.randomTablesUrl = randomTablesUrl;
@@ -90,12 +92,17 @@ function loadRandomTablesUrl() {
  * @returns {Object} The data used to draw the sidebar sections.
  */
 function loadSpreadsheetUrl(url) {
+  console.info({ name: "loadSpreadsheetUrl", url: url });
+  
   // Build the sidebar data
   let data = { sections: [] };
 
   if (url.trim() != "") {
     // Starting with the original url, append the urls on the Links sheet
     let loadUrls = loadLinksSheet(url);
+
+    console.info({ name: "loadSpreadsheetUrl", loadUrls: loadUrls });
+
     // Load each spreadsheet URL and process Index sheet into a sidebar section
     data.sections = loadUrls.reduce((accumulator, currentValue) => { accumulator.push(loadIndexSheet(currentValue)); return accumulator; }, data.sections);
   }
@@ -119,6 +126,8 @@ function loadLinksSheet(url) {
     let newValues = sheet.getRange(2, 2, sheet.getLastRow() - 1).getValues();
     // Append each URL to a list of URLs
     urls = newValues.reduce((accumulator, currentValue) => { accumulator.push(currentValue[0]); return accumulator; }, urls);
+
+    console.info({ name: "loadLinksSheet", urls: urls });
   }
 
   return urls;
@@ -141,6 +150,8 @@ function loadIndexSheet(url) {
     let values = sheet.getRange(2, 1, sheet.getLastRow() - 1).getValues();
     // Append each Button Text to the list of section buttons
     section.buttons = values.reduce((accumulator, currentValue) => { accumulator.push(currentValue[0]); return accumulator; }, section.buttons);
+
+    console.info({ name: "loadIndexSheet", url: url, buttons: section.buttons });
   }
 
   return section;
@@ -157,7 +168,9 @@ function handleSectionButtonClick(url, buttonText) {
   if (selection) {
     let ui = DocumentApp.getUi();
     ui.alert('Selection Detected', 'Deselect the selected text and try again.', ui.ButtonSet.OK);
+
   } else {
+    console.info({ name: "handleSectionButtonClick", url: url, buttonText: buttonText });
     spreadsheetFunction(url, buttonText);
   }
 }
@@ -190,6 +203,8 @@ function spreadsheetFunction(url, buttonText) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   let indexRow = getIndexRow(spreadsheet, buttonText);
   
+  console.info({ name: "spreadsheetFunction", indexRow: indexRow });
+
   if (indexRow) {
     if (indexRow.inputRange != "") {
       // Show Input Dialog
@@ -267,6 +282,8 @@ function showDialog(url, buttonText, inputs) {
   t.function_name = buttonText;
   t.inputs = inputs;
 
+  console.info({ name: "showDialog", url: t.url, function_name: t.function_name, inputs: t.inputs });
+
   let rowHeight = 34;
   let ui = t.evaluate()
     .setWidth(400)
@@ -285,6 +302,8 @@ function showDialog(url, buttonText, inputs) {
 function submitDialog(data) {
   let spreadsheet = SpreadsheetApp.openByUrl(data.url);
   let indexRow = getIndexRow(spreadsheet, data.function_name);
+  
+  console.info({ name: "submitDialog", data: data });
   
   if (indexRow) {
     try {
@@ -332,6 +351,7 @@ function addContentAtCursor(spreadsheet, outputCell) {
           try {
             let outputImageBlob = UrlFetchApp.fetch(outputValue).getBlob();
             elementInserted = cursor.insertInlineImage(outputImageBlob);
+            console.info({ name: "addContentAtCursor", outputValue: outputValue });
           } catch (error) {
             throw new Error(`ImageURL [${outputValue}]: ${error}`);
           }
@@ -342,6 +362,7 @@ function addContentAtCursor(spreadsheet, outputCell) {
       if (!elementInserted) {
         let outputValue = outputRange.getValue();
         elementInserted = cursor.insertText(outputValue);
+        console.info({ name: "addContentAtCursor", outputValue: outputValue });
       }
 
       // Move cursor accordingly
