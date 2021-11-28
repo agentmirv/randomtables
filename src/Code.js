@@ -40,8 +40,7 @@ function showSidebar() {
   t.randomTablesUrl = randomTablesUrl;
 
   let ui = t.evaluate()
-    .setTitle('Random Tables 1.2')
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+    .setTitle('Random Tables 1.2');
 
   DocumentApp.getUi().showSidebar(ui);
 }
@@ -287,8 +286,7 @@ function showDialog(url, buttonText, inputs) {
   let rowHeight = 34;
   let ui = t.evaluate()
     .setWidth(400)
-    .setHeight((inputs.length * rowHeight) + (3 * rowHeight))
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+    .setHeight((inputs.length * rowHeight) + (3 * rowHeight));
 
   DocumentApp.getUi().showModalDialog(ui, buttonText);
 }
