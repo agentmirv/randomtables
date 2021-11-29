@@ -40,7 +40,7 @@ function showSidebar() {
   t.randomTablesUrl = randomTablesUrl;
 
   let ui = t.evaluate()
-    .setTitle('Random Tables 1.2');
+    .setTitle('Random Tables 1.3');
 
   DocumentApp.getUi().showSidebar(ui);
 }
