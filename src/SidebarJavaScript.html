@@ -1,85 +1,100 @@
+<!-- So this is the ViewModel? -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.11/jsrender.min.js" integrity="sha512-bKlNlbTH3duwZ28zoqEhXui/yuaPuQVci6OAVu0zh2WfYbEKD39HszVR8byP4/L4YyBo3b5CGIY+4ldVN93uCg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsviews/1.0.11/jsviews.min.js" integrity="sha512-nzeptB37xiXMYfCfY/IF7iDG13S82taErKCx2+bIWukARqZNu7Gea6W7/VYf5FerrcIpfB5RkrjR9hEyvLtO9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-  $(function () {
+  var data = { 
+    randomTablesUrl: "", 
+    disableButton: true,
+    statusMessage: "",
+    isError: false,
+    sections: [],
+  };
 
-    $("#sidebar-container").on("container:append", function (event, sectionData) {
-      var template = $.templates("#sidebarSectionTemplate");
-      var htmlOutput = template.render(sectionData.sections);
-      $("#sidebar-container").html(htmlOutput);      
-
-    }).on("click", ".sidebar-section-close", function () {
-      $(this).closest( ".sidebar-section" ).remove();
-
-    }).on("click", ".sidebar-section-toggle", function () {
-      $(this).closest( ".sidebar-section" ).find('.sidebar-section-container').toggle();
-      
-    }).on("click", "button[data-id]", function () {
-      var button = $(this);
-      button.prop('disabled', true);
-      var data_url = button.attr('data-url');
-      var data_id = button.attr('data-id');
+  var helpers = {
+    //=================================
+    // getSavedUrl -> loadRandomTablesUrl
+    //=================================
+    getSavedUrl: function() {
+      google.script.run
+      .withUserObject(data)
+      .withSuccessHandler(
+        function (url, userObject) {
+          $.observable(userObject).setProperty("randomTablesUrl", url);
+          $.observable(userObject).setProperty("disableButton", false);
+          $.observable(userObject).setProperty("isError", false);
+        })
+      .withFailureHandler(
+        function (msg, userObject) {
+          $.observable(userObject).setProperty("disableButton", false);
+          $.observable(userObject).setProperty("statusMessage", msg);
+          $.observable(userObject).setProperty("isError", true);
+        })
+      .loadRandomTablesUrl();
+    },
+    //=================================
+    // loadUrl -> handleLoadButton
+    //=================================
+    loadUrl: function() {
+      $.observable(data).setProperty("disableButton", true);
 
       google.script.run
-        .withSuccessHandler(
-          function () {
-            button.prop('disabled', false);
-            showStatus('');
-          })
-        .withFailureHandler(
-          function (msg, element) {
-            // Respond to failure conditions here.
-            button.prop('disabled', false);
-            showStatus(msg, 'error');
-            element.disabled = false;
-          })
-        .handleSectionButtonClick(data_url, data_id);
-    });
-
-    $("#sidebar-container").sortable({
-      handle: ".sidebar-section-title",
-      axis: "y"
-    });
-
-    $("#sidebar-load-button").click(function () {
-      var button = $(this);
-      button.prop('disabled', true);
-      var url = $("#sidebar-load-url").val();
-
+      .withUserObject(data)
+      .withSuccessHandler(
+        function (sections, userObject) {
+          for (let i = 0; i < sections.length; i++){
+            $.observable(userObject.sections).insert(sections[i]);
+          } 
+          $.observable(userObject).setProperty("disableButton", false);
+          $.observable(userObject).setProperty("isError", false);
+        })
+      .withFailureHandler(
+        function (msg, userObject) {
+          console.log("withFailureHandler");
+          $.observable(userObject).setProperty("disableButton", false);
+          $.observable(userObject).setProperty("statusMessage", msg);
+          $.observable(userObject).setProperty("isError", true);
+        })
+      .handleLoadButton(data.randomTablesUrl);
+    },
+    //=================================
+    // loadSection -> loadSection
+    //=================================
+    loadSection: function(index, url) {
       google.script.run
-        .withSuccessHandler(
-          function (data) {
-            $("#sidebar-container").trigger("container:append", data);
-            button.prop('disabled', false);
-            showStatus('');
-          })
-        .withFailureHandler(
-          function (msg, element) {
-            // Respond to failure conditions here.
-            button.prop('disabled', false);
-            showStatus(msg, 'error');
-            element.disabled = false;
-          })
-        .handleLoadButton(url);
-    });
-    
-    $("#sidebar-load-button").trigger("click");
+      .withUserObject(data)
+      .withSuccessHandler(
+        function (section, userObject) {
+          $.observable(userObject.sections[index]).setProperty("name", section.name);
+          $.observable(userObject.sections[index]).setProperty("url", section.url);
+          $.observable(userObject.sections[index]).setProperty("buttons", section.buttons);
+          $.observable(userObject).setProperty("isError", false);
+        })
+      .withFailureHandler(
+        function (msg, userObject) {
+          $.observable(userObject).setProperty("statusMessage", msg);
+          $.observable(userObject).setProperty("isError", true);
+        })
+      .loadSection(url);
+    },
+  };
+  
+  var loadTemplate = $.templates("#sidebar-load-bar-template");
+  loadTemplate.link("#sidebar-load-bar", data, helpers);
+
+  var statusTemplate = $.templates("#sidebar-status-template");
+  statusTemplate.link("#sidebar-status", data, helpers);
+
+  var sectionTemplate = $.templates("#sidebar-section-template");
+  sectionTemplate.link("#sidebar-container", data, helpers);
+
+  $.observe(data.sections, function(ev, eventArgs) {
+    if (eventArgs.change == "insert"){
+      helpers.loadSection(eventArgs.index, eventArgs.items[0].url);
+    }
   });
 
-  /**
-   * Displays the given status message in the sidebar.
-   *
-   * @param {String} msg The status message to display.
-   * @param {String} classId The message type (class id) that the message
-   *   should be displayed as.
-   */
-  function showStatus(msg, classId) {
-    $('#sidebar-status').removeClass().html(msg);
-    if (classId) {
-      $('#sidebar-status').addClass(classId);
-    }
-  }
-
+  helpers.getSavedUrl();
 </script>
