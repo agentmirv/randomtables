@@ -26,19 +26,32 @@
   <script id="sidebar-section-template" type="text/x-jsrender">
     {^{for sections}}
       <div class="sidebar-section">
-        <div class="sidebar-section-title-bar">
-          <span class="sidebar-section-title">
-            {^{>name}} <a data-link="href{:url}" target="_blank"> ↗</a>
-          </span>
-          <span class="sidebar-section-close">✖</span>
-        </div>
-        <span class="sidebar-section-container">
-          {^{for buttons ~buttonUrl=url}}
-            <div class="block">
-              <button class="action" data-url="{{:~buttonUrl}}" data-id="{{:}}">{{:}}</button>
-            </div>
-          {{/for}}
-        </span>
+        {^{if isLoaded}}
+          <div class="sidebar-section-title-bar">
+            <span class="sidebar-section-title">
+              {^{>name}} <a data-link="href{:url}" target="_blank"> ↗</a>
+            </span>
+            {^{if buttons.length > 0}}
+              <span class="sidebar-section-toggle" data-link="{on 'click' ~toggleMinimize}">▭</span>
+            {{/if}}            
+            <span class="sidebar-section-close">✖</span>
+          </div>
+            {^{if !isMinimized}}
+              <span class="sidebar-section-container">
+                {^{for buttons ~buttonUrl=url}}
+                  <div class="block">
+                    <button class="action" data-url="{{:~buttonUrl}}" data-id="{{:}}">{{:}}</button>
+                  </div>
+                {{/for}}
+              </span>
+            {{/if}}
+        {{else}}
+          <div class="sidebar-section-title-bar">
+            <span class="sidebar-section-title">
+              Loading...
+            </span>
+          </div>        
+        {{/if}}
       </div>
     {{/for}}
   </script>  

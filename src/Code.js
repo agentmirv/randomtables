@@ -48,8 +48,7 @@ function handleLoadButton(url) {
 
   try {
     let spreadsheet = SpreadsheetApp.openByUrl(url);
-    let name = spreadsheet.getName();
-    let section = { url: url, name: name, buttons: [] };
+    let section = { url: url, name: "", buttons: [] };
     sections.push(section);
     saveRandomTablesUrl(url);
 
@@ -73,7 +72,7 @@ function loadLinksSheet(spreadsheet) {
     let newValues = sheet.getRange(2, 2, sheet.getLastRow() - 1).getValues();
     // Append each URL to a list of URLs
     sections = newValues.reduce((accumulator, currentValue) => { 
-      accumulator.push({ url: currentValue[0], name: "", buttons: [] }); 
+      accumulator.push({ url: currentValue[0], name: "", buttons: [], isLoaded: false, isMinimized: false }); 
       return accumulator; 
     }, sections);
   }
@@ -85,7 +84,7 @@ function loadSection(url) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   let sheet = spreadsheet.getSheetByName('Index');
   let name = spreadsheet.getName();
-  let section = { url: url, name: name, buttons: [] };
+  let section = { url: url, name: name, buttons: [], isLoaded: false, isMinimized: false };
   
   if (sheet != null && sheet.getLastRow() > 1) {
     // Starting at row 2, load Button text at Column 1

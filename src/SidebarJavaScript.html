@@ -70,6 +70,7 @@
           $.observable(userObject.sections[index]).setProperty("name", section.name);
           $.observable(userObject.sections[index]).setProperty("url", section.url);
           $.observable(userObject.sections[index]).setProperty("buttons", section.buttons);
+          $.observable(userObject.sections[index]).setProperty("isLoaded", true);
           $.observable(userObject).setProperty("isError", false);
         })
       .withFailureHandler(
@@ -78,6 +79,17 @@
           $.observable(userObject).setProperty("isError", true);
         })
       .loadSection(url);
+    },
+    //=================================
+    // toggleMinimize
+    //=================================
+    toggleMinimize: function(ev, eventArgs) {
+      $.observable(eventArgs.view.data).setProperty("isMinimized", !eventArgs.view.data.isMinimized);
+    },
+    //=================================
+    // removeSection
+    //=================================
+    removeSection: function(ev, eventArgs) {
     },
   };
   
