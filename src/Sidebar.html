@@ -34,7 +34,7 @@
             {^{if buttons.length > 0}}
               <span class="sidebar-section-toggle" data-link="{on 'click' ~toggleMinimize}">▭</span>
             {{/if}}            
-            <span class="sidebar-section-close">✖</span>
+            <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">✖</span>
           </div>
             {^{if !isMinimized}}
               <span class="sidebar-section-container">

@@ -1,4 +1,3 @@
-<!-- So this is the ViewModel? -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.11/jsrender.min.js" integrity="sha512-bKlNlbTH3duwZ28zoqEhXui/yuaPuQVci6OAVu0zh2WfYbEKD39HszVR8byP4/L4YyBo3b5CGIY+4ldVN93uCg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -17,68 +16,67 @@
     //=================================
     // getSavedUrl -> loadRandomTablesUrl
     //=================================
-    getSavedUrl: function() {
+    getSavedUrl: function(data) {
       google.script.run
-      .withUserObject(data)
-      .withSuccessHandler(
-        function (url, userObject) {
-          $.observable(userObject).setProperty("randomTablesUrl", url);
-          $.observable(userObject).setProperty("disableButton", false);
-          $.observable(userObject).setProperty("isError", false);
-        })
-      .withFailureHandler(
-        function (msg, userObject) {
-          $.observable(userObject).setProperty("disableButton", false);
-          $.observable(userObject).setProperty("statusMessage", msg);
-          $.observable(userObject).setProperty("isError", true);
-        })
-      .loadRandomTablesUrl();
+        .withUserObject(data)
+        .withSuccessHandler(
+          function (url, userObject) {
+            $.observable(userObject).setProperty("randomTablesUrl", url);
+            $.observable(userObject).setProperty("disableButton", false);
+            $.observable(userObject).setProperty("isError", false);
+          })
+        .withFailureHandler(
+          function (msg, userObject) {
+            $.observable(userObject).setProperty("disableButton", false);
+            $.observable(userObject).setProperty("statusMessage", msg);
+            $.observable(userObject).setProperty("isError", true);
+          })
+        .loadRandomTablesUrl();
     },
     //=================================
     // loadUrl -> handleLoadButton
     //=================================
-    loadUrl: function() {
+    loadUrl: function(ev, eventArgs) {
+      var data = eventArgs.view.data;
       $.observable(data).setProperty("disableButton", true);
-
       google.script.run
-      .withUserObject(data)
-      .withSuccessHandler(
-        function (sections, userObject) {
-          for (let i = 0; i < sections.length; i++){
-            $.observable(userObject.sections).insert(sections[i]);
-          } 
-          $.observable(userObject).setProperty("disableButton", false);
-          $.observable(userObject).setProperty("isError", false);
-        })
-      .withFailureHandler(
-        function (msg, userObject) {
-          console.log("withFailureHandler");
-          $.observable(userObject).setProperty("disableButton", false);
-          $.observable(userObject).setProperty("statusMessage", msg);
-          $.observable(userObject).setProperty("isError", true);
-        })
-      .handleLoadButton(data.randomTablesUrl);
+        .withUserObject(data)
+        .withSuccessHandler(
+          function (sections, userObject) {
+            for (let i = 0; i < sections.length; i++){
+              $.observable(userObject.sections).insert(sections[i]);
+            } 
+            $.observable(userObject).setProperty("disableButton", false);
+            $.observable(userObject).setProperty("isError", false);
+          })
+        .withFailureHandler(
+          function (msg, userObject) {
+            $.observable(userObject).setProperty("disableButton", false);
+            $.observable(userObject).setProperty("statusMessage", msg);
+            $.observable(userObject).setProperty("isError", true);
+          })
+        .handleLoadButton(data.randomTablesUrl);
     },
     //=================================
     // loadSection -> loadSection
     //=================================
-    loadSection: function(index, url) {
-      google.script.run
-      .withUserObject(data)
-      .withSuccessHandler(
-        function (section, userObject) {
-          $.observable(userObject.sections[index]).setProperty("name", section.name);
-          $.observable(userObject.sections[index]).setProperty("url", section.url);
-          $.observable(userObject.sections[index]).setProperty("buttons", section.buttons);
-          $.observable(userObject.sections[index]).setProperty("isLoaded", true);
-          $.observable(userObject).setProperty("isError", false);
-        })
-      .withFailureHandler(
-        function (msg, userObject) {
-          $.observable(userObject).setProperty("statusMessage", msg);
-          $.observable(userObject).setProperty("isError", true);
-        })
-      .loadSection(url);
+    loadSection: function(ev, eventArgs) {
+      if (eventArgs.change == "insert") {
+        var sectionData = eventArgs.items[0];
+        google.script.run
+          .withUserObject(sectionData)
+          .withSuccessHandler(
+            function (section, userObject) {
+              $.observable(userObject).setProperty("name", section.name);
+              $.observable(userObject).setProperty("url", section.url);
+              $.observable(userObject).setProperty("buttons", section.buttons);
+              $.observable(userObject).setProperty("isLoaded", true);
+            })
+          .withFailureHandler(
+            function (msg, userObject) {
+            })
+          .loadSection(sectionData.url);
+      }
     },
     //=================================
     // toggleMinimize
@@ -90,6 +88,10 @@
     // removeSection
     //=================================
     removeSection: function(ev, eventArgs) {
+      var view = $.view(ev.target);
+      var index = $.view(ev.target).getIndex();
+      var sections = view.get('array').data;
+      $.observable(sections).remove(index);
     },
   };
   
@@ -102,11 +104,7 @@
   var sectionTemplate = $.templates("#sidebar-section-template");
   sectionTemplate.link("#sidebar-container", data, helpers);
 
-  $.observe(data.sections, function(ev, eventArgs) {
-    if (eventArgs.change == "insert"){
-      helpers.loadSection(eventArgs.index, eventArgs.items[0].url);
-    }
-  });
+  $.observe(data, "sections", helpers.loadSection);
 
-  helpers.getSavedUrl();
+  helpers.getSavedUrl(data);
 </script>
