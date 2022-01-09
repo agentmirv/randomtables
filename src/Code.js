@@ -48,49 +48,58 @@ function handleLoadButton(url) {
 
   try {
     let spreadsheet = SpreadsheetApp.openByUrl(url);
-    let section = { url: url, name: "", buttons: [] };
-    sections.push(section);
     saveRandomTablesUrl(url);
-
-    let linkSections = loadLinksSheet(spreadsheet);
-    sections.push(...linkSections);
-    
+    sections = getSheetUrls(spreadsheet);
   } catch (error) {
     throw new Error(`Url [${url}] Error: ${error}`);
-
   }
 
   return sections;
 }
 
-function loadLinksSheet(spreadsheet) {
+function getSheetUrls(spreadsheet) {
   let sections = [];
+  let urls = [];
+  
+  urls.push(spreadsheet.getUrl());
+
   let sheet = spreadsheet.getSheetByName('Links');
 
   if (sheet != null && sheet.getLastRow() > 1) {
     // Starting at Row 2, load URL string at Column 2
-    let newValues = sheet.getRange(2, 2, sheet.getLastRow() - 1).getValues();
+    let sheetUrls = sheet.getRange(2, 2, sheet.getLastRow() - 1).getValues();
     // Append each URL to a list of URLs
-    sections = newValues.reduce((accumulator, currentValue) => { 
-      accumulator.push({ url: currentValue[0], name: "", buttons: [], isLoaded: false, isMinimized: false }); 
+    urls = sheetUrls.reduce((accumulator, currentValue) => { 
+      accumulator.push(currentValue[0]); 
       return accumulator; 
-    }, sections);
+    }, urls);    
   }
+
+  sections = urls.reduce((accumulator, currentValue) => { 
+    accumulator.push({ url: currentValue, name: "", buttons: [], isLoaded: false, isMinimized: false }); 
+    return accumulator; 
+  }, sections);
 
   return sections;
 }
 
 function loadSection(url) {
-  let spreadsheet = SpreadsheetApp.openByUrl(url);
-  let sheet = spreadsheet.getSheetByName('Index');
-  let name = spreadsheet.getName();
-  let section = { url: url, name: name, buttons: [], isLoaded: false, isMinimized: false };
-  
-  if (sheet != null && sheet.getLastRow() > 1) {
-    // Starting at row 2, load Button text at Column 1
-    let values = sheet.getRange(2, 1, sheet.getLastRow() - 1).getValues();
-    // Append each Button Text to the list of section buttons
-    section.buttons = values.reduce((accumulator, currentValue) => { accumulator.push(currentValue[0]); return accumulator; }, section.buttons);
+  let section = { url: url, name: "", buttons: [], isLoaded: false, isMinimized: false };
+
+  try {
+    let spreadsheet = SpreadsheetApp.openByUrl(url);
+    let sheet = spreadsheet.getSheetByName('Index');
+    let name = spreadsheet.getName();
+    section.name = name;
+    
+    if (sheet != null && sheet.getLastRow() > 1) {
+      // Starting at row 2, load Button text at Column 1
+      let values = sheet.getRange(2, 1, sheet.getLastRow() - 1).getValues();
+      // Append each Button Text to the list of section buttons
+      section.buttons = values.reduce((accumulator, currentValue) => { accumulator.push(currentValue[0]); return accumulator; }, section.buttons);
+    }  
+  } catch (error) {
+    throw new Error(`Url [${url}] Error: ${error}`);
   }
 
   return section;

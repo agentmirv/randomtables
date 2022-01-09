@@ -41,16 +41,29 @@
                 <span class="sidebar-section-container">
                   {^{for buttons ~buttonUrl=url}}
                     <div class="block">
-                      <button class="action" data-url="{{:~buttonUrl}}" data-id="{{:}}">{{:}}</button>
+                      <button class="action" data-link="{on ~showDialog}">{{:}}</button>
                     </div>
                   {{/for}}
                 </span>
               {{/if}}
+          {{else isError}}
+            <div class="sidebar-section-title-bar">
+              <span class="sidebar-section-title">
+                Error
+              </span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">✖</span>
+            </div>
+            <span class="sidebar-section-container">
+              <div class="block error">
+                {^{>msg}}
+              </div>
+            </span>
           {{else}}
             <div class="sidebar-section-title-bar">
               <span class="sidebar-section-title">
                 Loading...
               </span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">✖</span>
             </div>
           {{/if}}
         </div>

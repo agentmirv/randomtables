@@ -23,6 +23,7 @@
           function (url, userObject) {
             $.observable(userObject).setProperty("randomTablesUrl", url);
             $.observable(userObject).setProperty("disableButton", false);
+            $.observable(userObject).setProperty("statusMessage", "");
             $.observable(userObject).setProperty("isError", false);
           })
         .withFailureHandler(
@@ -47,6 +48,7 @@
               $.observable(userObject.sections).insert(sections[i]);
             } 
             $.observable(userObject).setProperty("disableButton", false);
+            $.observable(userObject).setProperty("statusMessage", "");
             $.observable(userObject).setProperty("isError", false);
           })
         .withFailureHandler(
@@ -74,6 +76,8 @@
             })
           .withFailureHandler(
             function (msg, userObject) {
+              $.observable(userObject).setProperty("msg", msg);
+              $.observable(userObject).setProperty("isError", true);
             })
           .loadSection(sectionData.url);
       }
@@ -92,6 +96,14 @@
       var index = $.view(ev.target).getIndex();
       var sections = view.get('array').data;
       $.observable(sections).remove(index);
+    },
+    //=================================
+    // showDialog
+    //=================================
+    showDialog: function(ev, eventArgs) {
+      var id = eventArgs.view.data;
+      var url = eventArgs.view.parent.parent.data.url
+      console.log(id, url);
     },
   };
   
