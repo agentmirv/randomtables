@@ -1,0 +1,45 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsviews/1.0.11/jsviews.min.js" integrity="sha512-nzeptB37xiXMYfCfY/IF7iDG13S82taErKCx2+bIWukARqZNu7Gea6W7/VYf5FerrcIpfB5RkrjR9hEyvLtO9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://www.jsviews.com/download/sample-tag-controls/jsviews-jqueryui-widgets.min.js"></script>
+
+<script>
+  var helpers = {
+    //=================================
+    // getInputs -> getInputs
+    //=================================
+    getInputs: function(data) {
+      var url = data.url;
+      var inputCount = data.inputCount;
+      var inputRange = data.inputRange;
+      for (var i = 0; i < inputCount; i++) {
+        console.log(inputRange);
+        console.log(i);
+        $.observable(data.inputs).insert({});
+        google.script.run
+          .withUserObject(data)
+          .withSuccessHandler(
+            function (input, userObject) {
+              $.observable(userObject.inputs[input.index]).setProperty("index", input.index);
+              $.observable(userObject.inputs[input.index]).setProperty("isLoaded", input.isLoaded);
+              $.observable(userObject.inputs[input.index]).setProperty("description", input.description);
+              $.observable(userObject.inputs[input.index]).setProperty("value", input.value);
+              $.observable(userObject.inputs[input.index]).setProperty("inputCell", input.inputCell);
+              $.observable(userObject.inputs[input.index]).setProperty("hasOptions", input.hasOptions);
+              $.observable(userObject.inputs[input.index]).setProperty("options", input.options);
+            })
+          .withFailureHandler(
+            function (msg, userObject) {
+              // $.observable(userObject).setProperty("msg", msg);
+              // $.observable(userObject).setProperty("isError", true);
+            })
+          .getDialogInput(url, inputRange, i);
+      }
+    },
+  };
+  
+  var loadTemplate = $.templates("#dialog-form-template");
+  loadTemplate.link("#dialog-form", data, helpers);
+  
+  helpers.getInputs(data);
+</script>

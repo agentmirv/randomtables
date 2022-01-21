@@ -5,7 +5,17 @@
     <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
   </head>
   <body>
-    
+
+  <script>
+    var data = { 
+      randomTablesUrl: "", 
+      disableButton: true,
+      statusMessage: "",
+      isError: false,
+      sections: [],
+    };
+  </script>    
+
   <div class="sidebar branding-below">
     <div id="sidebar-load-bar"></div>
     <div id="sidebar-status"></div>
@@ -41,7 +51,8 @@
                 <span class="sidebar-section-container">
                   {^{for buttons ~buttonUrl=url}}
                     <div class="block">
-                      <button class="action" data-link="{on ~showDialog}">{{:}}</button>
+                      <button class="action" data-link="{on ~showDialog}">{^{>name}}</button>
+                      {^{>inputCount}}
                     </div>
                   {{/for}}
                 </span>

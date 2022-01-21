@@ -4,14 +4,6 @@
 <script src="https://www.jsviews.com/download/sample-tag-controls/jsviews-jqueryui-widgets.min.js"></script>
 
 <script>
-  var data = { 
-    randomTablesUrl: "", 
-    disableButton: true,
-    statusMessage: "",
-    isError: false,
-    sections: [],
-  };
-
   var helpers = {
     //=================================
     // getSavedUrl -> loadRandomTablesUrl
@@ -98,12 +90,27 @@
       $.observable(sections).remove(index);
     },
     //=================================
-    // showDialog
+    // showDialog -> showDialog
     //=================================
     showDialog: function(ev, eventArgs) {
-      var id = eventArgs.view.data;
       var url = eventArgs.view.parent.parent.data.url
-      console.log(id, url);
+      var name = eventArgs.view.data.name;
+      var inputCount = eventArgs.view.data.inputCount;
+      var inputRange = eventArgs.view.data.inputRange;
+      var data = eventArgs.view.root.data
+      google.script.run
+        .withUserObject(data)
+        .withSuccessHandler(
+          function (userObject) {
+            $.observable(userObject).setProperty("statusMessage", "");
+            $.observable(userObject).setProperty("isError", false);
+          })
+        .withFailureHandler(
+          function (msg, userObject) {
+            $.observable(userObject).setProperty("statusMessage", msg);
+            $.observable(userObject).setProperty("isError", true);
+          })
+        .showDialog(url, name, inputCount, inputRange);
     },
   };
   

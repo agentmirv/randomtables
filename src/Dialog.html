@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+  <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+</head>
+
+<body>
+  <script>
+    var data = {
+      url: "<?= url ?>", 
+      inputCount: "<?= inputCount ?>",
+      inputRange: "<?= inputRange ?>",
+      inputs: [],
+      status: "",
+    };
+  </script>
+
+  <div id="dialog-form"></div>
+
+  <script id="dialog-form-template" type="text/x-jsrender">
+    <form class="form-grid">
+      {^{for inputs}}
+        {^{if isLoaded}}
+          <label class="form-label" data-link="for{:'dialog-input-' + index}">{^{:description}}</label>
+          {^{if hasOptions}}
+            <select class="form-input" data-link="id{:'dialog-input-' + index}" data-range{:inputCell}">
+              {^{for options}}
+                <option data-link="value{:}">{^{:}}</option>
+              {{/for}}
+            </select>
+          {{else}}
+            <input class="form-input" data-link="id{:'dialog-input-' + index}" value{:value} data-range{:inputCell}">
+          {{/if}}
+        {{else}}
+          <label class="form-label">Loading...</label>
+        {{/if}}
+      {{/for}}
+      <div class="form-full-width" id="dialog-button-bar">
+        <button class="action" id="dialog-ok-button">Ok</button>
+        <button id="dialog-cancel-button" onclick="google.script.host.close()">Cancel</button>
+      </div>
+      <div id="dialog-status">{^{:status}}</div>
+    </form>
+  
+  </script>
+
+  <!-- Use a templated HTML printing scriptlet to import JavaScript -->
+  <?!= HtmlService.createHtmlOutputFromFile('DialogJavaScript').getContent(); ?>
+</body>
+
+</html>
