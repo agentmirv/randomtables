@@ -177,8 +177,8 @@ function getDialogInput(url, inputRangeA1, index) {
     let type = valueValidations.getCriteriaType();
     let isInList = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST;
     let isInRange = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE;
-    let hasOptions = isInList || isInRange;
     let criteriaOptions = []
+    hasOptions = isInList || isInRange;
 
     if (hasOptions) {
       let criteriaValues = valueValidations.getCriteriaValues();
