@@ -31,12 +31,72 @@ function showSidebar() {
   DocumentApp.getUi().showSidebar(ui);
 }
 
-function loadRandomTablesUrl() {
+function handleInitialize() {
+  return loadRandomTablesUrl_();
+}
+
+function handleLoadButton(url) {
+  let sections = [];
+
+  try {
+    let spreadsheet = SpreadsheetApp.openByUrl(url);
+    saveRandomTablesUrl_(url);
+    sections = getSheetUrls_(spreadsheet);
+  } catch (error) {
+    throw new Error(`Url [${url}] Error: ${error}`);
+  }
+
+  return sections;
+}
+
+function handleLoadSection(url) {
+  let section = { url: url, name: "", buttons: [], isLoaded: false, isMinimized: false };
+
+  try {
+    let spreadsheet = SpreadsheetApp.openByUrl(url);
+    let sheet = spreadsheet.getSheetByName('Index');
+    let name = spreadsheet.getName();
+    section.name = name;
+    
+    if (sheet != null && sheet.getLastRow() > 1) {
+      // Starting at row 2, load Button text at Column 1
+      const startRow = 2;
+      const startColumn = 1;
+      const numRows = sheet.getLastRow() - 1;
+      const numColumns = 3;
+      let values = sheet.getRange(startRow, startColumn, numRows, numColumns).getValues();
+
+      // Append each Button Text to the list of section buttons
+      section.buttons = values.reduce((accumulator, currentValue) => { 
+        accumulator.push({ 
+          name: currentValue[0], 
+          outputRange: currentValue[1], 
+          inputCount:  getInputCount_(spreadsheet, currentValue[2]),
+          inputRange: currentValue[2],
+        }); 
+        return accumulator; 
+      }, section.buttons);
+    }  
+  } catch (error) {
+    throw new Error(`Url [${url}] Error: ${error}`);
+  }
+
+  return section;
+}
+
+function handleAction(url, buttonText) {
+  let documentHasSelection = documentHasSelection_();
+  if (!documentHasSelection) {
+    //spreadsheetFunction(url, buttonText);
+  }
+}
+
+function loadRandomTablesUrl_() {
   let documentProperties = PropertiesService.getDocumentProperties();
   return documentProperties.getProperty('randomTablesUrl') || "";
 }
 
-function saveRandomTablesUrl(url) {
+function saveRandomTablesUrl_(url) {
   let documentProperties = PropertiesService.getDocumentProperties();
   if (url.trim() == "") {
     documentProperties.deleteProperty('randomTablesUrl');
@@ -45,21 +105,7 @@ function saveRandomTablesUrl(url) {
   }
 }
 
-function handleLoadButton(url) {
-  let sections = [];
-
-  try {
-    let spreadsheet = SpreadsheetApp.openByUrl(url);
-    saveRandomTablesUrl(url);
-    sections = getSheetUrls(spreadsheet);
-  } catch (error) {
-    throw new Error(`Url [${url}] Error: ${error}`);
-  }
-
-  return sections;
-}
-
-function getSheetUrls(spreadsheet) {
+function getSheetUrls_(spreadsheet) {
   let sections = [];
   let urls = [];
   
@@ -85,41 +131,7 @@ function getSheetUrls(spreadsheet) {
   return sections;
 }
 
-function loadSection(url) {
-  let section = { url: url, name: "", buttons: [], isLoaded: false, isMinimized: false };
-
-  try {
-    let spreadsheet = SpreadsheetApp.openByUrl(url);
-    let sheet = spreadsheet.getSheetByName('Index');
-    let name = spreadsheet.getName();
-    section.name = name;
-    
-    if (sheet != null && sheet.getLastRow() > 1) {
-      // Starting at row 2, load Button text at Column 1
-      const startRow = 2;
-      const startColumn = 1;
-      const numRows = sheet.getLastRow() - 1;
-      const numColumns = 3;
-      let values = sheet.getRange(startRow, startColumn, numRows, numColumns).getValues();
-
-      // Append each Button Text to the list of section buttons
-      section.buttons = values.reduce((accumulator, currentValue) => { 
-        accumulator.push({ 
-          name: currentValue[0], 
-          inputCount:  getInputCount(spreadsheet, currentValue[2]),
-          inputRange: currentValue[2],
-        }); 
-        return accumulator; 
-      }, section.buttons);
-    }  
-  } catch (error) {
-    throw new Error(`Url [${url}] Error: ${error}`);
-  }
-
-  return section;
-}
-
-function getInputCount(spreadsheet, inputRangeA1) {
+function getInputCount_(spreadsheet, inputRangeA1) {
   var count = 0;
 
   if (inputRangeA1 != "") {
@@ -130,12 +142,26 @@ function getInputCount(spreadsheet, inputRangeA1) {
   return count;
 }
 
+function documentHasSelection_() {
+  let hasSelection = false;
+
+  let selection = DocumentApp.getActiveDocument().getSelection();
+  if (selection) {
+    hasSelection = true;
+    let ui = DocumentApp.getUi();
+    ui.alert('Selection Detected', 'Deselect the selected text and try again.', ui.ButtonSet.OK);
+  } 
+
+  return hasSelection;
+}
+
 //=========================================================
 
-function showDialog(url, name, inputCount, inputRange) {
+function showDialog(url, name, outputRange, inputCount, inputRange) {
   if (inputCount > 0) {
     let t = HtmlService.createTemplateFromFile('Dialog');
     t.url = url;
+    t.outputRange = outputRange;
     t.inputCount = inputCount;
     t.inputRange = inputRange;
     let rowHeight = 34;
@@ -177,7 +203,7 @@ function getDialogInput(url, inputRangeA1, index) {
     let type = valueValidations.getCriteriaType();
     let isInList = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST;
     let isInRange = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE;
-    let criteriaOptions = []
+    let criteriaOptions = [];
     hasOptions = isInList || isInRange;
 
     if (hasOptions) {
@@ -191,7 +217,7 @@ function getDialogInput(url, inputRangeA1, index) {
       }
 
       options = criteriaOptions.reduce((accumulator, currentValue) => { 
-        accumulator.push({ value: currentValue, selected: currentValue == value }); 
+        accumulator.push({ value: currentValue }); 
         return accumulator; 
       }, options);
     }  
@@ -257,41 +283,47 @@ function spreadsheetFunction(url, buttonText) {
   }
 }
 
-function getDialogInputs(spreadsheet, inputCell) {
-  let dialogInputs = [];
-  try {
-    var inputRange = spreadsheet.getRange(inputCell);
-  } catch (error) {
-    throw new Error(`Input [${inputCell}]: ${error}`);
-  }
-  let inputRangeValues = inputRange.getValues();
-  let inputRangeValidations = inputRange.getDataValidations();
+function addContentAtCursor(spreadsheet, outputCell) {
+  let document = DocumentApp.getActiveDocument();
+  let cursor = document.getCursor();
+  let elementInserted = null;
 
-  for (let j = 0; j < inputRange.getNumColumns(); j++) {
-    let input = {
-      input_help: inputRangeValues[0][j],
-      default_value: inputRangeValues[1][j],
-      // getCell column index starts at 1
-      // This is the A1 Notation of the default_value cell
-      input_range: inputRange.getCell(2, j + 1).getA1Notation()
-    };
+  if (cursor) {
+    try {
+      let outputRange = spreadsheet.getRange(outputCell);
 
-    // Process the input range valudations for the default_value cell
-    // Set input.input_options
-    if (inputRangeValidations[1][j] != null) {
-      input.input_type = inputRangeValidations[1][j].getCriteriaType();
-      if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
-        let criteria = inputRangeValidations[1][j].getCriteriaValues();
-        input.input_options = criteria[0].filter(option => option.toString().trim().length > 0);
-      } else if (input.input_type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE) {
-        let criteria = inputRangeValidations[1][j].getCriteriaValues();
-        let criteriaRange = criteria[0];
-        input.input_options = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);
+      // Output Range detected
+      if (outputRange.getNumRows() == 2) {
+        // Support only one output column
+        outputRange = outputRange.offset(0, 0, 2, 1);
+        let [outputType, outputValue] = outputRange.getValues();
+        if (outputType == 'imageurl') {
+          try {
+            let outputImageBlob = UrlFetchApp.fetch(outputValue).getBlob();
+            elementInserted = cursor.insertInlineImage(outputImageBlob);
+            console.info({ name: "addContentAtCursor", outputValue: outputValue });
+          } catch (error) {
+            throw new Error(`ImageURL [${outputValue}]: ${error}`);
+          }
+        }
       }
+
+      // Output Cell detected or invalid Output Range type
+      if (!elementInserted) {
+        let outputValue = outputRange.getValue();
+        elementInserted = cursor.insertText(outputValue);
+        console.info({ name: "addContentAtCursor", outputValue: outputValue });
+      }
+
+      // Move cursor accordingly
+      let parent = elementInserted.getParent();
+      let elementIndex = parent.getChildIndex(elementInserted);
+      let cursorNew = document.newPosition(parent, elementIndex + 1);
+      document.setCursor(cursorNew);
+
+    } catch (error) {
+      throw new Error(`Output [${outputCell}]: ${error}`);
     }
-
-    dialogInputs.push(input);
   }
-
-  return dialogInputs;
 }
+

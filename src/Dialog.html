@@ -11,6 +11,7 @@
   <script>
     var data = {
       url: "<?= url ?>", 
+      outputRange: "<?= outputRange ?>",
       inputCount: "<?= inputCount ?>",
       inputRange: "<?= inputRange ?>",
       inputs: [],
@@ -21,18 +22,18 @@
   <div id="dialog-form"></div>
 
   <script id="dialog-form-template" type="text/x-jsrender">
-    <form class="form-grid">
+    <form class="form-grid" data-link="{on 'submit' ~handleSubmit}">
       {^{for inputs}}
         {^{if isLoaded}}
           <label class="form-label" data-link="for{:'dialog-input-' + index}">{^{:description}}</label>
           {^{if hasOptions}}
-            <select class="form-input" data-link="id{:'dialog-input-' + index}" data-range{:inputCell}">
+            <select class="form-input" data-link="{:value:} id{:'dialog-input-' + index}" data-range{:inputCell}">
               {^{for options}}
-                <option data-link="value{:value} selected{:selected||null}">{^{:value}}</option>
+                <option value="{{:value}}">{^{:value}}</option>
               {{/for}}
             </select>
           {{else}}
-            <input class="form-input" data-link="id{:'dialog-input-' + index}" value{:value} data-range{:inputCell}">
+            <input class="form-input" data-link="{:value:} id{:'dialog-input-' + index}" data-range{:inputCell}">
           {{/if}}
         {{else}}
           <label class="form-label">Loading...</label>

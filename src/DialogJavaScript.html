@@ -6,15 +6,13 @@
 <script>
   var helpers = {
     //=================================
-    // getInputs -> getInputs
+    // getInputs -> getDialogInput
     //=================================
     getInputs: function(data) {
       var url = data.url;
       var inputCount = data.inputCount;
       var inputRange = data.inputRange;
       for (var i = 0; i < inputCount; i++) {
-        console.log(inputRange);
-        console.log(i);
         $.observable(data.inputs).insert({});
         google.script.run
           .withUserObject(data)
@@ -35,6 +33,30 @@
             })
           .getDialogInput(url, inputRange, i);
       }
+    },
+    //=================================
+    // handleSubmit -> handleSubmit
+    //=================================
+    handleSubmit: function(ev, eventArgs) {
+      // var data = eventArgs.view.data
+      // var url = data.url
+      // var outputRange = data.outputRange; 
+      // var inputCount = data.inputCount;
+      // var inputRange = data.inputRange;
+      console.log(data);
+      // google.script.run
+      //   .withUserObject(data)
+      //   .withSuccessHandler(
+      //     function (userObject) {
+      //       $.observable(userObject).setProperty("statusMessage", "");
+      //       $.observable(userObject).setProperty("isError", false);
+      //     })
+      //   .withFailureHandler(
+      //     function (msg, userObject) {
+      //       $.observable(userObject).setProperty("statusMessage", msg);
+      //       $.observable(userObject).setProperty("isError", true);
+      //     })
+      //   .handleSubmit(url, name, inputCount, inputRange);
     },
   };
   
