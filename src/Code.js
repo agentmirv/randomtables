@@ -175,16 +175,26 @@ function getDialogInput(url, inputRangeA1, index) {
 
   if (valueValidations != null) {
     let type = valueValidations.getCriteriaType();
-    if (type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
-      hasOptions = true;
-      let criteria = valueValidations.getCriteriaValues();
-      options = criteria[0].filter(option => option.toString().trim().length > 0);
-    } else if (type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE) {
-      hasOptions = true;
-      let criteria = valueValidations.getCriteriaValues();
-      let criteriaRange = criteria[0];
-      options = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);
-    }
+    let isInList = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST;
+    let isInRange = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE;
+    let hasOptions = isInList || isInRange;
+    let criteriaOptions = []
+
+    if (hasOptions) {
+      let criteriaValues = valueValidations.getCriteriaValues();
+
+      if (isInList) {
+        criteriaOptions = criteriaValues[0].filter(option => option.toString().trim().length > 0);
+      } else if (isInRange) {
+        let criteriaRange = criteriaValues[0];
+        criteriaOptions = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);  
+      }
+
+      options = criteriaOptions.reduce((accumulator, currentValue) => { 
+        accumulator.push({ value: currentValue, selected: currentValue == value }); 
+        return accumulator; 
+      }, options);
+    }  
   }
 
   let input = {

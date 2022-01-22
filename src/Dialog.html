@@ -28,7 +28,7 @@
           {^{if hasOptions}}
             <select class="form-input" data-link="id{:'dialog-input-' + index}" data-range{:inputCell}">
               {^{for options}}
-                <option data-link="value{:}">{^{:}}</option>
+                <option data-link="value{:value} selected{:selected||null}">{^{:value}}</option>
               {{/for}}
             </select>
           {{else}}
