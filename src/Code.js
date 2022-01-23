@@ -171,11 +171,12 @@ function showDialog_(url, name, outputRange, inputCount, inputRange) {
     t.outputRange = outputRange;
     t.inputCount = inputCount;
     t.inputRange = inputRange;
-    let rowHeight = 34;
-    let buttonAreaHeight = 3 * rowHeight;
+    let rowHeight = 29;
+    let headerAreaHeight = 44;
+    let buttonAreaHeight = 49;
     let ui = t.evaluate()
       .setWidth(400)
-      .setHeight((inputCount * rowHeight) + buttonAreaHeight);
+      .setHeight(headerAreaHeight + (inputCount * rowHeight) + buttonAreaHeight);
 
     DocumentApp.getUi().showModalDialog(ui, name);
   } else {
