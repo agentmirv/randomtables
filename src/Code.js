@@ -84,10 +84,19 @@ function handleLoadSection(url) {
   return section;
 }
 
-function handleAction(url, buttonText) {
+function handleAction(url, name, outputRange, inputCount, inputRange) {
+  console.info(url, name, outputRange, inputCount, inputRange);
   let documentHasSelection = documentHasSelection_();
   if (!documentHasSelection) {
-    //spreadsheetFunction(url, buttonText);
+    if (inputCount > 0) {
+      showDialog_(url, name, outputRange, inputCount, inputRange);
+    } else {
+      let spreadsheet = SpreadsheetApp.openByUrl(url);
+      // Cycle random sheet functions
+      let temp = spreadsheet.getRange('A1').getValue();
+      spreadsheet.getRange('A1').setValue(temp);
+      addContentAtCursor_(spreadsheet, outputRange);
+    }
   }
 }
 
@@ -155,9 +164,7 @@ function documentHasSelection_() {
   return hasSelection;
 }
 
-//=========================================================
-
-function showDialog(url, name, outputRange, inputCount, inputRange) {
+function showDialog_(url, name, outputRange, inputCount, inputRange) {
   if (inputCount > 0) {
     let t = HtmlService.createTemplateFromFile('Dialog');
     t.url = url;
@@ -172,11 +179,13 @@ function showDialog(url, name, outputRange, inputCount, inputRange) {
 
     DocumentApp.getUi().showModalDialog(ui, name);
   } else {
-    console.info({ name: "showDialog", inputCount: inputCount });
+    console.info({ name: "showDialog_", inputCount: inputCount });
   }
 }
 
-function getDialogInput(url, inputRangeA1, index) {
+//=========================================================
+
+function handleLoadDialogInput(url, inputRangeA1, index) {
   let spreadsheet = SpreadsheetApp.openByUrl(url);
   var inputRange = null;
 
@@ -185,10 +194,6 @@ function getDialogInput(url, inputRangeA1, index) {
   } catch (error) {
     throw new Error(`Input [${inputRangeA1}]: ${error}`);
   }
-
-  const row = 2;
-  const column = index + 1;
-  let inputCell = inputRange.getCell(row, column).getA1Notation();
 
   let inputRangeValues = inputRange.getValues();
   let description = inputRangeValues[0][index];
@@ -228,7 +233,6 @@ function getDialogInput(url, inputRangeA1, index) {
     isLoaded: true,
     description: description,
     value: value,
-    inputCell: inputCell,
     hasOptions: hasOptions,
     options: options, 
   };
@@ -236,54 +240,54 @@ function getDialogInput(url, inputRangeA1, index) {
   return input;
 }
 
+function handleSubmitDialog(data) {
+  let spreadsheet = SpreadsheetApp.openByUrl(data.url);
+  var inputRange = null;
+
+  try {
+    inputRange = spreadsheet.getRange(data.inputRange);
+  } catch (error) {
+    throw new Error(`Input [${data.inputRange}]: ${error}`);
+  }
+
+  console.info(data.inputRange);
+
+  let inputSheet = inputRange.getSheet(); 
+
+  let valueRange = inputSheet.getRange(
+    inputRange.getLastRow(), // row, 
+    inputRange.getColumn(), //column, 
+    1, //numRows, 
+    inputRange.getNumColumns(), //numColumns
+  ); 
+
+  console.info({ 
+    row: valueRange.getRow(), 
+    col: valueRange.getColumn(), 
+    numRows: valueRange.getNumRows(), 
+    numCols: valueRange.getNumColumns(),
+  });
+
+  let rangeValues = [];
+  let rowValues = [];
+
+  rowValues = data.inputs.sort((a, b) => a.index - b.index).reduce((accumulator, currentValue) => { 
+    accumulator.push( currentValue.value ); 
+    return accumulator; 
+  }, rowValues);
+
+  rangeValues.push(rowValues);
+  console.info(rangeValues);
+
+  valueRange.setValues(rangeValues);
+
+  // Write Output to Doc
+  addContentAtCursor_(spreadsheet, data.outputRange);
+}
+
 //=========================================================
 
- function handleSectionButtonClick(url, buttonText) {
-  let selection = DocumentApp.getActiveDocument().getSelection();
-  if (selection) {
-    let ui = DocumentApp.getUi();
-    ui.alert('Selection Detected', 'Deselect the selected text and try again.', ui.ButtonSet.OK);
-
-  } else {
-    console.info({ name: "handleSectionButtonClick", url: url, buttonText: buttonText });
-    spreadsheetFunction(url, buttonText);
-  }
-}
-
-function getIndexRow(spreadsheet, buttonText) {
-  let indexSheet = spreadsheet.getSheetByName('Index');
-  let indexValues = indexSheet.getRange(1, 1, indexSheet.getLastRow(), 3).getValues();
-  let indexRow = {};
-  
-  [indexRow.buttonText, indexRow.outputRange, indexRow.inputRange] = indexValues.find(indexEntry => buttonText == indexEntry[0]);
-  
-  return indexRow; 
-}
-
-function spreadsheetFunction(url, buttonText) {
-  let spreadsheet = SpreadsheetApp.openByUrl(url);
-  let indexRow = getIndexRow(spreadsheet, buttonText);
-  
-  console.info({ name: "spreadsheetFunction", indexRow: indexRow });
-
-  if (indexRow) {
-    if (indexRow.inputRange != "") {
-      // Show Input Dialog
-      let dialogInputs = getDialogInputs(spreadsheet, indexRow.inputRange);
-      showDialog(url, indexRow.buttonText, dialogInputs);
-      
-    } else {
-      // Cycle random sheet functions
-      let temp = spreadsheet.getRange('A1').getValue();
-      spreadsheet.getRange('A1').setValue(temp);
-
-      // Write Output to Doc
-      addContentAtCursor(spreadsheet, indexRow.outputRange);
-    }
-  }
-}
-
-function addContentAtCursor(spreadsheet, outputCell) {
+function addContentAtCursor_(spreadsheet, outputCell) {
   let document = DocumentApp.getActiveDocument();
   let cursor = document.getCursor();
   let elementInserted = null;
@@ -301,7 +305,7 @@ function addContentAtCursor(spreadsheet, outputCell) {
           try {
             let outputImageBlob = UrlFetchApp.fetch(outputValue).getBlob();
             elementInserted = cursor.insertInlineImage(outputImageBlob);
-            console.info({ name: "addContentAtCursor", outputValue: outputValue });
+            console.info({ name: "addContentAtCursor_", outputValue: outputValue });
           } catch (error) {
             throw new Error(`ImageURL [${outputValue}]: ${error}`);
           }
@@ -312,7 +316,7 @@ function addContentAtCursor(spreadsheet, outputCell) {
       if (!elementInserted) {
         let outputValue = outputRange.getValue();
         elementInserted = cursor.insertText(outputValue);
-        console.info({ name: "addContentAtCursor", outputValue: outputValue });
+        console.info({ name: "addContentAtCursor_", outputValue: outputValue });
       }
 
       // Move cursor accordingly

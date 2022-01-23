@@ -51,8 +51,7 @@
                 <span class="sidebar-section-container">
                   {^{for buttons ~buttonUrl=url}}
                     <div class="block">
-                      <button class="action" data-link="{on ~showDialog}">{^{>name}}</button>
-                      {^{>inputCount}}
+                      <button class="action" data-link="{on ~handleAction}">{^{>name}}</button>
                     </div>
                   {{/for}}
                 </span>

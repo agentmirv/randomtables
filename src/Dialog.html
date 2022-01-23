@@ -22,18 +22,18 @@
   <div id="dialog-form"></div>
 
   <script id="dialog-form-template" type="text/x-jsrender">
-    <form class="form-grid" data-link="{on 'submit' ~handleSubmit}">
+    <form class="form-grid" data-link="{on 'submit' ~handleSubmitDialog}">
       {^{for inputs}}
         {^{if isLoaded}}
           <label class="form-label" data-link="for{:'dialog-input-' + index}">{^{:description}}</label>
           {^{if hasOptions}}
-            <select class="form-input" data-link="{:value:} id{:'dialog-input-' + index}" data-range{:inputCell}">
+            <select class="form-input" data-link="{:value:} id{:'dialog-input-' + index}">
               {^{for options}}
                 <option value="{{:value}}">{^{:value}}</option>
               {{/for}}
             </select>
           {{else}}
-            <input class="form-input" data-link="{:value:} id{:'dialog-input-' + index}" data-range{:inputCell}">
+            <input class="form-input" data-link="{:value:} id{:'dialog-input-' + index}">
           {{/if}}
         {{else}}
           <label class="form-label">Loading...</label>

@@ -27,7 +27,7 @@
         .handleInitialize();
     },
     //=================================
-    // loadUrl -> handleLoadButton
+    // handleLoadButton -> handleLoadButton
     //=================================
     handleLoadButton: function(ev, eventArgs) {
       var data = eventArgs.view.data;
@@ -111,31 +111,7 @@
             $.observable(userObject).setProperty("statusMessage", msg);
             $.observable(userObject).setProperty("isError", true);
           })
-        .handleAction(url, name, inputCount, inputRange);
-    },
-    //=================================
-    // showDialog -> showDialog
-    //=================================
-    showDialog: function(ev, eventArgs) {
-      var url = eventArgs.view.parent.parent.data.url
-      var name = eventArgs.view.data.name;
-      var outputRange = eventArgs.view.data.outputRange;
-      var inputCount = eventArgs.view.data.inputCount;
-      var inputRange = eventArgs.view.data.inputRange;
-      var data = eventArgs.view.root.data
-      google.script.run
-        .withUserObject(data)
-        .withSuccessHandler(
-          function (userObject) {
-            $.observable(userObject).setProperty("statusMessage", "");
-            $.observable(userObject).setProperty("isError", false);
-          })
-        .withFailureHandler(
-          function (msg, userObject) {
-            $.observable(userObject).setProperty("statusMessage", msg);
-            $.observable(userObject).setProperty("isError", true);
-          })
-        .showDialog(url, name, outputRange, inputCount, inputRange);
+        .handleAction(url, name, outputRange, inputCount, inputRange);
     },
   };
   

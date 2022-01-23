@@ -6,9 +6,9 @@
 <script>
   var helpers = {
     //=================================
-    // getInputs -> getDialogInput
+    // handleInitialize -> handleLoadDialogInput
     //=================================
-    getInputs: function(data) {
+    handleInitialize: function(data) {
       var url = data.url;
       var inputCount = data.inputCount;
       var inputRange = data.inputRange;
@@ -22,7 +22,6 @@
               $.observable(userObject.inputs[input.index]).setProperty("isLoaded", input.isLoaded);
               $.observable(userObject.inputs[input.index]).setProperty("description", input.description);
               $.observable(userObject.inputs[input.index]).setProperty("value", input.value);
-              $.observable(userObject.inputs[input.index]).setProperty("inputCell", input.inputCell);
               $.observable(userObject.inputs[input.index]).setProperty("hasOptions", input.hasOptions);
               $.observable(userObject.inputs[input.index]).setProperty("options", input.options);
             })
@@ -31,37 +30,33 @@
               // $.observable(userObject).setProperty("msg", msg);
               // $.observable(userObject).setProperty("isError", true);
             })
-          .getDialogInput(url, inputRange, i);
+          .handleLoadDialogInput(url, inputRange, i);
       }
     },
     //=================================
-    // handleSubmit -> handleSubmit
+    // handleSubmitDialog -> handleSubmitDialog
     //=================================
-    handleSubmit: function(ev, eventArgs) {
-      // var data = eventArgs.view.data
-      // var url = data.url
-      // var outputRange = data.outputRange; 
-      // var inputCount = data.inputCount;
-      // var inputRange = data.inputRange;
+    handleSubmitDialog: function(ev, eventArgs) {
       console.log(data);
-      // google.script.run
-      //   .withUserObject(data)
-      //   .withSuccessHandler(
-      //     function (userObject) {
-      //       $.observable(userObject).setProperty("statusMessage", "");
-      //       $.observable(userObject).setProperty("isError", false);
-      //     })
-      //   .withFailureHandler(
-      //     function (msg, userObject) {
-      //       $.observable(userObject).setProperty("statusMessage", msg);
-      //       $.observable(userObject).setProperty("isError", true);
-      //     })
-      //   .handleSubmit(url, name, inputCount, inputRange);
+      google.script.run
+        .withUserObject(data)
+        .withSuccessHandler(
+          function (userObject) {
+            google.script.host.close();
+            $.observable(userObject).setProperty("statusMessage", "");
+            $.observable(userObject).setProperty("isError", false);
+          })
+        .withFailureHandler(
+          function (msg, userObject) {
+            $.observable(userObject).setProperty("statusMessage", msg);
+            $.observable(userObject).setProperty("isError", true);
+          })
+        .handleSubmitDialog(data);
     },
   };
   
   var loadTemplate = $.templates("#dialog-form-template");
   loadTemplate.link("#dialog-form", data, helpers);
   
-  helpers.getInputs(data);
+  helpers.handleInitialize(data);
 </script>
