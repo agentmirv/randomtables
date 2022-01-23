@@ -230,12 +230,12 @@ function handleLoadDialogInput(url, inputRangeA1, index) {
   }
 
   let input = {
+    description: description,
+    hasOptions: hasOptions,
     index: index,
     isLoaded: true,
-    description: description,
-    value: value,
-    hasOptions: hasOptions,
     options: options, 
+    value: value,
   };
 
   return input;
@@ -247,43 +247,44 @@ function handleSubmitDialog(data) {
 
   try {
     inputRange = spreadsheet.getRange(data.inputRange);
+    
+    console.info(data.inputRange);
+
+    let inputSheet = inputRange.getSheet(); 
+  
+    let valueRange = inputSheet.getRange(
+      inputRange.getLastRow(), // row, 
+      inputRange.getColumn(), //column, 
+      1, //numRows, 
+      inputRange.getNumColumns(), //numColumns
+    ); 
+  
+    console.info({ 
+      row: valueRange.getRow(), 
+      col: valueRange.getColumn(), 
+      numRows: valueRange.getNumRows(), 
+      numCols: valueRange.getNumColumns(),
+    });
+  
+    let rangeValues = [];
+    let rowValues = [];
+  
+    rowValues = data.inputs.sort((a, b) => a.index - b.index).reduce((accumulator, currentValue) => { 
+      accumulator.push( currentValue.value ); 
+      return accumulator; 
+    }, rowValues);
+  
+    rangeValues.push(rowValues);
+    console.info(rangeValues);
+  
+    valueRange.setValues(rangeValues);
+  
+    // Write Output to Doc
+    addContentAtCursor_(spreadsheet, data.outputRange);
+  
   } catch (error) {
     throw new Error(`Input [${data.inputRange}]: ${error}`);
   }
-
-  console.info(data.inputRange);
-
-  let inputSheet = inputRange.getSheet(); 
-
-  let valueRange = inputSheet.getRange(
-    inputRange.getLastRow(), // row, 
-    inputRange.getColumn(), //column, 
-    1, //numRows, 
-    inputRange.getNumColumns(), //numColumns
-  ); 
-
-  console.info({ 
-    row: valueRange.getRow(), 
-    col: valueRange.getColumn(), 
-    numRows: valueRange.getNumRows(), 
-    numCols: valueRange.getNumColumns(),
-  });
-
-  let rangeValues = [];
-  let rowValues = [];
-
-  rowValues = data.inputs.sort((a, b) => a.index - b.index).reduce((accumulator, currentValue) => { 
-    accumulator.push( currentValue.value ); 
-    return accumulator; 
-  }, rowValues);
-
-  rangeValues.push(rowValues);
-  console.info(rangeValues);
-
-  valueRange.setValues(rangeValues);
-
-  // Write Output to Doc
-  addContentAtCursor_(spreadsheet, data.outputRange);
 }
 
 //=========================================================

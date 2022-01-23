@@ -93,14 +93,16 @@
     // handleAction -> handleAction
     //=================================
     handleAction: function(ev, eventArgs) {
-      var url = eventArgs.view.parent.parent.data.url
-      var name = eventArgs.view.data.name;
-      var outputRange = eventArgs.view.data.outputRange; 
-      var inputCount = eventArgs.view.data.inputCount;
-      var inputRange = eventArgs.view.data.inputRange;
-      var data = eventArgs.view.root.data
+      var actionData = eventArgs.view.data;
+      var sectionData = eventArgs.view.parent.parent.data;
+      var rootData = eventArgs.view.root.data; 
+      var url = sectionData.url
+      var name = actionData.name;
+      var outputRange = actionData.outputRange; 
+      var inputCount = actionData.inputCount;
+      var inputRange = actionData.inputRange;
       google.script.run
-        .withUserObject(data)
+        .withUserObject(rootData)
         .withSuccessHandler(
           function (userObject) {
             $.observable(userObject).setProperty("statusMessage", "");

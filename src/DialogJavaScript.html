@@ -6,7 +6,7 @@
 <script>
   var helpers = {
     //=================================
-    // handleInitialize -> handleLoadDialogInput
+    // handleInitialize -> for handleLoadDialogInput
     //=================================
     handleInitialize: function(data) {
       var url = data.url;
@@ -27,8 +27,8 @@
             })
           .withFailureHandler(
             function (msg, userObject) {
-              // $.observable(userObject).setProperty("msg", msg);
-              // $.observable(userObject).setProperty("isError", true);
+              $.observable(userObject).setProperty("statusMessage", msg);
+              $.observable(userObject).setProperty("isError", true);
             })
           .handleLoadDialogInput(url, inputRange, i);
       }
@@ -37,7 +37,8 @@
     // handleSubmitDialog -> handleSubmitDialog
     //=================================
     handleSubmitDialog: function(ev, eventArgs) {
-      console.log(data);
+      var data = eventArgs.view.data;
+      $.observable(data).setProperty("isDisabled", true);
       google.script.run
         .withUserObject(data)
         .withSuccessHandler(

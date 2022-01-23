@@ -15,7 +15,9 @@
       inputCount: "<?= inputCount ?>",
       inputRange: "<?= inputRange ?>",
       inputs: [],
-      status: "",
+      statusMessage: "",
+      isError: false,
+      isDisabled: false,
     };
   </script>
 
@@ -23,27 +25,29 @@
 
   <script id="dialog-form-template" type="text/x-jsrender">
     <form class="form-grid" data-link="{on 'submit' ~handleSubmitDialog}">
-      {^{for inputs}}
+      {^{for inputs }}
         {^{if isLoaded}}
           <label class="form-label" data-link="for{:'dialog-input-' + index}">{^{:description}}</label>
           {^{if hasOptions}}
-            <select class="form-input" data-link="{:value:} id{:'dialog-input-' + index}">
+            <select class="form-input" data-link="{:value:} id{:'dialog-input-' + index} disabled{:~root.isError||~root.isDisabled||null}">
               {^{for options}}
                 <option value="{{:value}}">{^{:value}}</option>
               {{/for}}
             </select>
           {{else}}
-            <input class="form-input" data-link="{:value:} id{:'dialog-input-' + index}">
+            <input class="form-input" data-link="{:value:} id{:'dialog-input-' + index} disabled{:~root.isError||~root.isDisabled||null}">
           {{/if}}
         {{else}}
           <label class="form-label">Loading...</label>
         {{/if}}
       {{/for}}
-      <div class="form-full-width" id="dialog-button-bar">
-        <button class="action" id="dialog-ok-button">Ok</button>
-        <button id="dialog-cancel-button" onclick="google.script.host.close()">Cancel</button>
-      </div>
-      <div id="dialog-status">{^{:status}}</div>
+      {^{if !isError}}
+        <div class="form-full-width" id="dialog-button-bar">
+          <button class="action" id="dialog-ok-button" data-link="disabled{:~root.isDisabled||null}">Ok</button>
+          <button id="dialog-cancel-button" onclick="google.script.host.close()" data-link="disabled{:~root.isDisabled||null}">Cancel</button>
+        </div>
+      {{/if}}
+      <div id="dialog-status" data-link="class{merge:isError toggle='error'}">{^{:statusMessage}}</div>
     </form>
   
   </script>

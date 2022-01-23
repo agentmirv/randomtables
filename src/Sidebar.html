@@ -49,7 +49,7 @@
             </div>
               {^{if !isMinimized}}
                 <span class="sidebar-section-container">
-                  {^{for buttons ~buttonUrl=url}}
+                  {^{for buttons}}
                     <div class="block">
                       <button class="action" data-link="{on ~handleAction}">{^{>name}}</button>
                     </div>
@@ -64,7 +64,7 @@
               <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">✖</span>
             </div>
             <span class="sidebar-section-container">
-              <div class="block error">
+              <div class="block error section-status">
                 {^{>msg}}
               </div>
             </span>
