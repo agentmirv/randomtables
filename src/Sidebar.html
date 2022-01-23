@@ -40,18 +40,21 @@
           {^{if isLoaded}}
             <div class="sidebar-section-title-bar">
               <span class="sidebar-section-title">
-                {^{>name}} <a data-link="href{:url}" target="_blank"> ↗</a>
+                {^{>name}} <a data-link="href{:url}" target="_blank"> &#x2197;</a>
               </span>
               {^{if buttons.length > 0}}
-                <span class="sidebar-section-toggle" data-link="{on 'click' ~handleMinimize}">▭</span>
+                <span class="sidebar-section-toggle" data-link="{on 'click' ~handleMinimize}">&#x25AD;</span>
               {{/if}}
-              <span class="sidebar-section-close" data-link="{on 'click' ~handleRemove}">✖</span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~handleRemove}">&#x2715;</span>
             </div>
               {^{if !isMinimized}}
                 <span class="sidebar-section-container">
                   {^{for buttons}}
                     <div class="block">
                       <button class="action" data-link="{on ~handleAction}">{^{>name}}</button>
+                      {^{if inputCount > 0}}
+                        <span>&#x2630;</span>
+                      {{/if}}
                     </div>
                   {{/for}}
                 </span>
@@ -61,7 +64,7 @@
               <span class="sidebar-section-title">
                 Error
               </span>
-              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">✖</span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">&#x2715;</span>
             </div>
             <span class="sidebar-section-container">
               <div class="block error section-status">
@@ -73,7 +76,7 @@
               <span class="sidebar-section-title">
                 Loading...
               </span>
-              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">✖</span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">&#x2715;</span>
             </div>
           {{/if}}
         </div>
