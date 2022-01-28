@@ -4,25 +4,70 @@
 <script src="https://www.jsviews.com/download/sample-tag-controls/jsviews-jqueryui-widgets.min.js"></script>
 
 <script>
+$.views.viewModels({
+  Sidebar: {
+    getters: [
+    "randomTablesUrl", 
+    "disableButton",
+    "statusMessage",
+    "isError",
+     { getter: "sections", type: "Section" },
+    ],
+    // extend: {addPhone: addPhone}
+  },
+  Section: {
+    getters: [
+      "url",
+      "name",
+      "isError",
+      "isLoaded",
+      "isMinimized",
+      "msg",
+      { getter: "buttons", type: "Button" },
+    ]
+  },
+  Button: {
+    getters: [
+      "name",
+      "outputRange",
+      "inputCount",
+      "inputRange",
+    ]
+  },
+});  
+</script>
+<script>
+var data = { 
+    randomTablesUrl: "", 
+    disableButton: true,
+    statusMessage: "",
+    isError: false,
+    sections: [],
+  };
+
+var sidebar = $.views.viewModels.Sidebar.map(data);
+</script>
+<script>
   var helpers = {
     //=================================
     // handleInitialize -> handleInitialize
     //=================================
-    handleInitialize: function(data) {
+    handleInitialize: function(sidebar) {
+      sidebar.disableButton(true);
       google.script.run
-        .withUserObject(data)
+        .withUserObject(sidebar)
         .withSuccessHandler(
           function (url, userObject) {
-            $.observable(userObject).setProperty("randomTablesUrl", url);
-            $.observable(userObject).setProperty("disableButton", false);
-            $.observable(userObject).setProperty("statusMessage", "");
-            $.observable(userObject).setProperty("isError", false);
+            userObject.randomTablesUrl(url);
+            userObject.disableButton(false);
+            userObject.statusMessage("");
+            userObject.isError(false);
           })
         .withFailureHandler(
           function (msg, userObject) {
-            $.observable(userObject).setProperty("disableButton", false);
-            $.observable(userObject).setProperty("statusMessage", msg);
-            $.observable(userObject).setProperty("isError", true);
+            userObject.disableButton(false);
+            userObject.statusMessage(msg);
+            userObject.isError(true);
           })
         .handleInitialize();
     },
@@ -30,26 +75,26 @@
     // handleLoadButton -> handleLoadButton
     //=================================
     handleLoadButton: function(ev, eventArgs) {
-      var data = eventArgs.view.data;
-      $.observable(data).setProperty("disableButton", true);
+      var sidebar = eventArgs.view.data;
+      sidebar.disableButton(true);
       google.script.run
-        .withUserObject(data)
+        .withUserObject(sidebar)
         .withSuccessHandler(
           function (sections, userObject) {
             for (let i = 0; i < sections.length; i++){
-              $.observable(userObject.sections).insert(sections[i]);
+              $.observable(userObject.sections()).insert($.views.viewModels.Section.map(sections[i]));
             } 
-            $.observable(userObject).setProperty("disableButton", false);
-            $.observable(userObject).setProperty("statusMessage", "");
-            $.observable(userObject).setProperty("isError", false);
+            userObject.disableButton(false);
+            userObject.statusMessage("");
+            userObject.isError(false);
           })
         .withFailureHandler(
           function (msg, userObject) {
-            $.observable(userObject).setProperty("disableButton", false);
-            $.observable(userObject).setProperty("statusMessage", msg);
-            $.observable(userObject).setProperty("isError", true);
+            userObject.disableButton(false);
+            userObject.statusMessage(msg);
+            userObject.isError(true);
           })
-        .handleLoadButton(data.randomTablesUrl);
+        .handleLoadButton(sidebar.randomTablesUrl());
     },
     //=================================
     // handleLoadSection -> handleLoadSection
@@ -61,33 +106,33 @@
           .withUserObject(sectionData)
           .withSuccessHandler(
             function (section, userObject) {
-              $.observable(userObject).setProperty("name", section.name);
-              $.observable(userObject).setProperty("url", section.url);
-              $.observable(userObject).setProperty("buttons", section.buttons);
-              $.observable(userObject).setProperty("isLoaded", true);
+              userObject.name(section.name);
+              userObject.url(section.url);
+              userObject.buttons($.views.viewModels.Button.map(section.buttons))
+              userObject.isLoaded(true);
             })
           .withFailureHandler(
             function (msg, userObject) {
-              $.observable(userObject).setProperty("msg", msg);
-              $.observable(userObject).setProperty("isError", true);
+              userObject.msg(msg);
+              userObject.isError(true);
             })
-          .handleLoadSection(sectionData.url);
+          .handleLoadSection(sectionData.url());
       }
     },
     //=================================
     // handleMinimize
     //=================================
     handleMinimize: function(ev, eventArgs) {
-      $.observable(eventArgs.view.data).setProperty("isMinimized", !eventArgs.view.data.isMinimized);
+      var sectionData = eventArgs.view.data;
+      sectionData.isMinimized(!sectionData.isMinimized());
     },
     //=================================
     // handleRemove
     //=================================
     handleRemove: function(ev, eventArgs) {
-      var view = $.view(ev.target);
-      var index = $.view(ev.target).getIndex();
-      var sections = view.get('array').data;
-      $.observable(sections).remove(index);
+      var sidebarData = eventArgs.view.root.data;
+      var sectionIndex = eventArgs.view.getIndex();
+      $.observable(sidebarData.sections()).remove(sectionIndex);
     },
     //=================================
     // handleAction -> handleAction
@@ -95,38 +140,37 @@
     handleAction: function(ev, eventArgs) {
       var actionData = eventArgs.view.data;
       var sectionData = eventArgs.view.parent.parent.data;
-      var rootData = eventArgs.view.root.data; 
-      var url = sectionData.url
-      var name = actionData.name;
-      var outputRange = actionData.outputRange; 
-      var inputCount = actionData.inputCount;
-      var inputRange = actionData.inputRange;
+      var sidebarData = eventArgs.view.root.data; 
+      var url = sectionData.url()
+      var name = actionData.name();
+      var outputRange = actionData.outputRange(); 
+      var inputCount = actionData.inputCount();
+      var inputRange = actionData.inputRange();
       google.script.run
-        .withUserObject(rootData)
+        .withUserObject(sidebarData)
         .withSuccessHandler(
-          function (userObject) {
-            $.observable(userObject).setProperty("statusMessage", "");
-            $.observable(userObject).setProperty("isError", false);
+          function (returnValue, userObject) {
+            userObject.statusMessage("");
+            userObject.isError(false);
           })
         .withFailureHandler(
           function (msg, userObject) {
-            $.observable(userObject).setProperty("statusMessage", msg);
-            $.observable(userObject).setProperty("isError", true);
+            userObject.statusMessage(msg);
+            userObject.isError(true);
           })
         .handleAction(url, name, outputRange, inputCount, inputRange);
     },
   };
   
-  var loadTemplate = $.templates("#sidebar-load-bar-template");
-  loadTemplate.link("#sidebar-load-bar", data, helpers);
+  $.templates("loadTemplate", "#sidebar-load-bar-template");
+  $.templates("statusTemplate", "#sidebar-status-template");
+  $.templates("sectionTemplate", "#sidebar-section-template");
 
-  var statusTemplate = $.templates("#sidebar-status-template");
-  statusTemplate.link("#sidebar-status", data, helpers);
+  $.link.loadTemplate("#sidebar-load-bar", sidebar, helpers);
+  $.link.statusTemplate("#sidebar-status", sidebar, helpers);
+  $.link.sectionTemplate("#sidebar-container", sidebar, helpers);
 
-  var sectionTemplate = $.templates("#sidebar-section-template");
-  sectionTemplate.link("#sidebar-container", data, helpers);
+  $.observe(sidebar.sections(), helpers.handleLoadSection);
 
-  $.observe(data, "sections", helpers.handleLoadSection);
-
-  helpers.handleInitialize(data);
+  helpers.handleInitialize(sidebar);
 </script>

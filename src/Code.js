@@ -32,7 +32,8 @@ function showSidebar() {
 }
 
 function handleInitialize() {
-  return loadRandomTablesUrl_();
+  let savedUrl = loadRandomTablesUrl_();
+  return savedUrl;
 }
 
 function handleLoadButton(url) {

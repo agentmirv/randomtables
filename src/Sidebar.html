@@ -6,16 +6,6 @@
   </head>
   <body>
 
-  <script>
-    var data = { 
-      randomTablesUrl: "", 
-      disableButton: true,
-      statusMessage: "",
-      isError: false,
-      sections: [],
-    };
-  </script>    
-
   <div class="sidebar branding-below">
     <div id="sidebar-load-bar"></div>
     <div id="sidebar-status"></div>
@@ -25,41 +15,41 @@
   <div class="sidebar bottom"></div>
 
   <script id="sidebar-load-bar-template" type="text/x-jsrender">
-    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="randomTablesUrl">
-    <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton} {on ~handleLoadButton}">Load</button>
+    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:randomTablesUrl():}">
+    <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton()} {on ~handleLoadButton}">Load</button>
   </script>
 
   <script id="sidebar-status-template" type="text/x-jsrender">
-    <div data-link="class{merge:isError toggle='error'}">{^{>statusMessage}}</div>
+    <div data-link="class{merge:isError() toggle='error'}">{^{>statusMessage()}}</div>
   </script>
 
   <script id="sidebar-section-template" type="text/x-jsrender">
     <div class="sidebar-section-container" data-link="{sortable _handle='.sidebar-section-title' _axis='y' }">
-      {^{for sections}}
+      {^{for sections()}}
         <div class="sidebar-section">
-          {^{if isLoaded}}
+          {^{if isLoaded()}}
             <div class="sidebar-section-title-bar">
               <span class="sidebar-section-title">
-                {^{>name}} <a data-link="href{:url}" target="_blank"> &#x2197;</a>
+                {^{:name()}} <a data-link="href{:url()}" target="_blank"> &#x2197;</a>
               </span>
-              {^{if buttons.length > 0}}
+              {^{if buttons().length > 0}}
                 <span class="sidebar-section-toggle" data-link="{on 'click' ~handleMinimize}">&#x25AD;</span>
               {{/if}}
               <span class="sidebar-section-close" data-link="{on 'click' ~handleRemove}">&#x2715;</span>
             </div>
-              {^{if !isMinimized}}
+              {^{if !isMinimized()}}
                 <span class="sidebar-section-container">
-                  {^{for buttons}}
+                  {^{for buttons()}}
                     <div class="block">
-                      <button class="action" data-link="{on ~handleAction}">{^{>name}}</button>
-                      {^{if inputCount > 0}}
+                      <button class="action" data-link="{on ~handleAction}">{^{>name()}}</button>
+                      {^{if inputCount() > 0}}
                         <span>&#x2630;</span>
                       {{/if}}
                     </div>
                   {{/for}}
                 </span>
               {{/if}}
-          {{else isError}}
+          {{else isError()}}
             <div class="sidebar-section-title-bar">
               <span class="sidebar-section-title">
                 Error
@@ -68,7 +58,7 @@
             </div>
             <span class="sidebar-section-container">
               <div class="block error section-status">
-                {^{>msg}}
+                {^{>msg()}}
               </div>
             </span>
           {{else}}

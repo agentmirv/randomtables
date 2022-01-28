@@ -55,9 +55,9 @@
         .handleSubmitDialog(data);
     },
   };
-  
-  var loadTemplate = $.templates("#dialog-form-template");
-  loadTemplate.link("#dialog-form", data, helpers);
-  
+   
+  $.templates("dialogTemplate", "#dialog-form-template");
+  $.link.dialogTemplate("#dialog-form", data, helpers);
+
   helpers.handleInitialize(data);
 </script>
