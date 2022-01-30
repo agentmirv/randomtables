@@ -15,7 +15,7 @@
   <div class="sidebar bottom"></div>
 
   <script id="sidebar-load-bar-template" type="text/x-jsrender">
-    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:randomTablesUrl():}">
+    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:randomTablesUrl():} disabled{:disableButton()}">
     <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton()} {on ~sidebarHelper.handleLoadButton}">Load</button>
   </script>
 

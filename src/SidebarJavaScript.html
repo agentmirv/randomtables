@@ -42,6 +42,7 @@
     // handleInitialize -> handleInitialize
     //=================================
     handleInitialize: function(sidebar) {
+      var helper = this;
       sidebar.disableButton(true);
       google.script.run
         .withUserObject(sidebar)
@@ -51,6 +52,7 @@
             userObject.disableButton(false);
             userObject.statusMessage("");
             userObject.isError(false);
+            helper.loadRandomTablesUrl(userObject);
           })
         .withFailureHandler(
           function (msg, userObject) {
@@ -61,10 +63,16 @@
         .handleInitialize();
     },
     //=================================
-    // handleLoadButton -> handleLoadButton
+    // handleLoadButton -> loadRandomTablesUrl
     //=================================
     handleLoadButton: function(ev, eventArgs) {
       var sidebar = eventArgs.view.data;
+      this.loadRandomTablesUrl(sidebar);
+    },
+    //=================================
+    // loadRandomTablesUrl -> handleLoadButton
+    //=================================
+    loadRandomTablesUrl: function(sidebar) {
       sidebar.disableButton(true);
       google.script.run
         .withUserObject(sidebar)

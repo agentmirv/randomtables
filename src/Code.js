@@ -42,9 +42,11 @@ function handleLoadButton(url) {
   let sections = [];
 
   try {
-    let spreadsheet = SpreadsheetApp.openByUrl(url);
     saveRandomTablesUrl_(url);
-    sections = getSheetUrls_(spreadsheet);
+    if (url != "") {
+      let spreadsheet = SpreadsheetApp.openByUrl(url);
+      sections = getSheetUrls_(spreadsheet);  
+    }
   } catch (error) {
     throw new Error(`Url [${url}] Error: ${error}`);
   }
