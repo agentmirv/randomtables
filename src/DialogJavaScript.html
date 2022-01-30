@@ -34,9 +34,6 @@ $.views.viewModels({
 });  
 </script>
 <script>
-  var dialog = $.views.viewModels.Dialog.map(data);
-  </script>  
-<script>
   var helpers = {
     //=================================
     // handleInitialize -> for handleLoadDialogInput
@@ -46,7 +43,7 @@ $.views.viewModels({
       var inputCount = dialogData.inputCount();
       var inputRange = dialogData.inputRange();
       for (var i = 0; i < inputCount; i++) {
-        $.observable(dialogData.inputs()).insert($.views.viewModels.Input.map({ options:[] }));
+        $.observable(dialogData.inputs()).insert($.views.viewModels.Input.map({ options: [] }));
         google.script.run
           .withUserObject(dialogData)
           .withSuccessHandler(
@@ -82,7 +79,10 @@ $.views.viewModels({
         .handleSubmitDialog(dialogSubmitData);
     },
   };
-   
+</script>  
+<script>
+  var dialog = $.views.viewModels.Dialog.map(data);
+
   $.templates("dialogTemplate", "#dialog-form-template");
   $.link.dialogTemplate("#dialog-form", dialog, helpers);
 

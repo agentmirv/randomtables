@@ -37,17 +37,6 @@ $.views.viewModels({
 });  
 </script>
 <script>
-var data = { 
-    randomTablesUrl: "", 
-    disableButton: true,
-    statusMessage: "",
-    isError: false,
-    sections: [],
-  };
-
-var sidebar = $.views.viewModels.Sidebar.map(data);
-</script>
-<script>
   var helpers = {
     //=================================
     // handleInitialize -> handleInitialize
@@ -161,6 +150,9 @@ var sidebar = $.views.viewModels.Sidebar.map(data);
         .handleAction(url, name, outputRange, inputCount, inputRange);
     },
   };
+</script>
+<script>
+  var sidebar = $.views.viewModels.Sidebar.map({ sections: [] });
   
   $.templates("loadTemplate", "#sidebar-load-bar-template");
   $.templates("statusTemplate", "#sidebar-status-template");

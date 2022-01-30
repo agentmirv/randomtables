@@ -21,12 +21,14 @@ function onOpen(e) {
 }
 
 //=========================================================
+// Sidebar
+//=========================================================
 
 function showSidebar() {
   let t = HtmlService.createTemplateFromFile('Sidebar')
 
   let ui = t.evaluate()
-    .setTitle('Random Tables 1.3');
+    .setTitle('Random Tables 1.4');
 
   DocumentApp.getUi().showSidebar(ui);
 }
@@ -86,18 +88,22 @@ function handleLoadSection(url) {
 }
 
 function handleAction(url, name, outputRange, inputCount, inputRange) {
-  console.info(url, name, outputRange, inputCount, inputRange);
-  let documentHasSelection = documentHasSelection_();
-  if (!documentHasSelection) {
-    if (inputCount > 0) {
-      showDialog_(url, name, outputRange, inputCount, inputRange);
-    } else {
-      let spreadsheet = SpreadsheetApp.openByUrl(url);
-      // Cycle random sheet functions
-      let temp = spreadsheet.getRange('A1').getValue();
-      spreadsheet.getRange('A1').setValue(temp);
-      addContentAtCursor_(spreadsheet, outputRange);
-    }
+  console.info({ url: url, name: name, outputRange: outputRange, inputCount: inputCount, inputRange: inputRange });
+  try {
+    let documentHasSelection = documentHasSelection_();
+    if (!documentHasSelection) {
+      if (inputCount > 0) {
+        showDialog_(url, name, outputRange, inputCount, inputRange);
+      } else {
+        let spreadsheet = SpreadsheetApp.openByUrl(url);
+        // Cycle random sheet functions
+        let temp = spreadsheet.getRange('A1').getValue();
+        spreadsheet.getRange('A1').setValue(temp);
+        addContentAtCursor_(spreadsheet, outputRange);
+      }
+    }  
+  } catch (error) {
+    throw new Error(`Action [${name}] Error: ${error}`);
   }
 }
 
@@ -142,7 +148,7 @@ function getSheetUrls_(spreadsheet) {
 }
 
 function getInputCount_(spreadsheet, inputRangeA1) {
-  var count = 0;
+  let count = 0;
 
   if (inputRangeA1 != "") {
     const inputRange = spreadsheet.getRange(inputRangeA1);
@@ -166,99 +172,100 @@ function documentHasSelection_() {
 }
 
 function showDialog_(url, name, outputRange, inputCount, inputRange) {
-  if (inputCount > 0) {
-    let t = HtmlService.createTemplateFromFile('Dialog');
-    t.url = url;
-    t.outputRange = outputRange;
-    t.inputCount = inputCount;
-    t.inputRange = inputRange;
-    let rowHeight = 29;
-    let headerAreaHeight = 44;
-    let buttonAreaHeight = 49;
-    let ui = t.evaluate()
-      .setWidth(400)
-      .setHeight(headerAreaHeight + (inputCount * rowHeight) + buttonAreaHeight);
+  let t = HtmlService.createTemplateFromFile('Dialog');
+  t.url = url;
+  t.outputRange = outputRange;
+  t.inputCount = inputCount;
+  t.inputRange = inputRange;
+  const rowHeight = 29;
+  const headerAreaHeight = 44;
+  const buttonAreaHeight = 49;
+  let ui = t.evaluate()
+    .setWidth(400)
+    .setHeight(headerAreaHeight + (inputCount * rowHeight) + buttonAreaHeight);
 
-    DocumentApp.getUi().showModalDialog(ui, name);
-  } else {
-    console.info({ name: "showDialog_", inputCount: inputCount });
-  }
+  DocumentApp.getUi().showModalDialog(ui, name);
 }
 
 //=========================================================
+// Dialog
+//=========================================================
 
 function handleLoadDialogInput(url, inputRangeA1, index) {
-  let spreadsheet = SpreadsheetApp.openByUrl(url);
-  var inputRange = null;
+  console.info({ url: url, inputRangeA1: inputRangeA1, index: index })
+  let input = null;
 
   try {
-    inputRange = spreadsheet.getRange(inputRangeA1);
+    let spreadsheet = SpreadsheetApp.openByUrl(url);
+    let inputRange = spreadsheet.getRange(inputRangeA1);
+
+    let inputRangeValues = inputRange.getValues();
+    let description = inputRangeValues[0][index];
+    let value = inputRangeValues[1][index];
+  
+    let hasOptions = false;
+    let options = [];
+    let inputRangeValidations = inputRange.getDataValidations();
+    let valueValidations = inputRangeValidations[1][index];
+  
+    if (valueValidations != null) {
+      let type = valueValidations.getCriteriaType();
+      let isInList = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST;
+      let isInRange = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE;
+      let criteriaOptions = [];
+      hasOptions = isInList || isInRange;
+  
+      if (hasOptions) {
+        let criteriaValues = valueValidations.getCriteriaValues();
+  
+        if (isInList) {
+          criteriaOptions = criteriaValues[0].filter(option => option.toString().trim().length > 0);
+        } else if (isInRange) {
+          let criteriaRange = criteriaValues[0];
+          criteriaOptions = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);  
+        }
+  
+        options = criteriaOptions.reduce((accumulator, currentValue) => { 
+          accumulator.push({ value: currentValue }); 
+          return accumulator; 
+        }, options);
+      }  
+    }
+  
+    input = {
+      description: description,
+      hasOptions: hasOptions,
+      index: index,
+      isLoaded: true,
+      options: options, 
+      value: value,
+    };
+    
+    console.info({
+      description: description,
+      hasOptions: hasOptions,
+      index: index,
+      isLoaded: true,
+      options: options, 
+      value: value,
+    });
   } catch (error) {
     throw new Error(`Input [${inputRangeA1}]: ${error}`);
   }
-
-  let inputRangeValues = inputRange.getValues();
-  let description = inputRangeValues[0][index];
-  let value = inputRangeValues[1][index];
-
-  let hasOptions = false;
-  let options = [];
-  let inputRangeValidations = inputRange.getDataValidations();
-  let valueValidations = inputRangeValidations[1][index];
-
-  if (valueValidations != null) {
-    let type = valueValidations.getCriteriaType();
-    let isInList = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST;
-    let isInRange = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_RANGE;
-    let criteriaOptions = [];
-    hasOptions = isInList || isInRange;
-
-    if (hasOptions) {
-      let criteriaValues = valueValidations.getCriteriaValues();
-
-      if (isInList) {
-        criteriaOptions = criteriaValues[0].filter(option => option.toString().trim().length > 0);
-      } else if (isInRange) {
-        let criteriaRange = criteriaValues[0];
-        criteriaOptions = criteriaRange.getValues().flat().filter(option => option.toString().trim().length > 0);  
-      }
-
-      options = criteriaOptions.reduce((accumulator, currentValue) => { 
-        accumulator.push({ value: currentValue }); 
-        return accumulator; 
-      }, options);
-    }  
-  }
-
-  let input = {
-    description: description,
-    hasOptions: hasOptions,
-    index: index,
-    isLoaded: true,
-    options: options, 
-    value: value,
-  };
 
   return input;
 }
 
 function handleSubmitDialog(data) {
-  let spreadsheet = SpreadsheetApp.openByUrl(data.url);
-  var inputRange = null;
-
   try {
-    inputRange = spreadsheet.getRange(data.inputRange);
+    let spreadsheet = SpreadsheetApp.openByUrl(data.url);
+    let inputRange = spreadsheet.getRange(data.inputRange);
     
-    console.info(data.inputRange);
+    console.info({ inputRange: data.inputRange });
 
-    let inputSheet = inputRange.getSheet(); 
-  
-    let valueRange = inputSheet.getRange(
-      inputRange.getLastRow(), // row, 
-      inputRange.getColumn(), //column, 
-      1, //numRows, 
-      inputRange.getNumColumns(), //numColumns
-    ); 
+    // Get just the value row
+    // offset(rowOffset, columnOffset, numRows)
+    let valueRange = inputRange.offset(1, 0, 1);
   
     console.info({ 
       row: valueRange.getRow(), 
@@ -276,7 +283,7 @@ function handleSubmitDialog(data) {
     }, rowValues);
   
     rangeValues.push(rowValues);
-    console.info(rangeValues);
+    console.info({ rangeValues: rangeValues });
   
     valueRange.setValues(rangeValues);
   
@@ -288,27 +295,27 @@ function handleSubmitDialog(data) {
   }
 }
 
-//=========================================================
-
-function addContentAtCursor_(spreadsheet, outputCell) {
+function addContentAtCursor_(spreadsheet, outputRangeA1) {
   let document = DocumentApp.getActiveDocument();
   let cursor = document.getCursor();
   let elementInserted = null;
+  console.info({ outputRangeA1: outputRangeA1 });
 
   if (cursor) {
     try {
-      let outputRange = spreadsheet.getRange(outputCell);
+      let outputRange = spreadsheet.getRange(outputRangeA1);
 
       // Output Range detected
       if (outputRange.getNumRows() == 2) {
         // Support only one output column
+        // offset(rowOffset, columnOffset, numRows, numColumns)
         outputRange = outputRange.offset(0, 0, 2, 1);
         let [outputType, outputValue] = outputRange.getValues();
         if (outputType == 'imageurl') {
           try {
+            console.info({ imageurl: outputValue });
             let outputImageBlob = UrlFetchApp.fetch(outputValue).getBlob();
             elementInserted = cursor.insertInlineImage(outputImageBlob);
-            console.info({ name: "addContentAtCursor_", outputValue: outputValue });
           } catch (error) {
             throw new Error(`ImageURL [${outputValue}]: ${error}`);
           }
@@ -318,8 +325,8 @@ function addContentAtCursor_(spreadsheet, outputCell) {
       // Output Cell detected or invalid Output Range type
       if (!elementInserted) {
         let outputValue = outputRange.getValue();
+        console.info({ text: outputValue });
         elementInserted = cursor.insertText(outputValue);
-        console.info({ name: "addContentAtCursor_", outputValue: outputValue });
       }
 
       // Move cursor accordingly
@@ -329,7 +336,7 @@ function addContentAtCursor_(spreadsheet, outputCell) {
       document.setCursor(cursorNew);
 
     } catch (error) {
-      throw new Error(`Output [${outputCell}]: ${error}`);
+      throw new Error(`Output [${outputRangeA1}]: ${error}`);
     }
   }
 }

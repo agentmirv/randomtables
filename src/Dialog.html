@@ -8,18 +8,6 @@
 </head>
 
 <body>
-  <script>
-    var data = {
-      url: "<?= url ?>", 
-      outputRange: "<?= outputRange ?>",
-      inputCount: "<?= inputCount ?>",
-      inputRange: "<?= inputRange ?>",
-      inputs: [],
-      statusMessage: "",
-      isError: false,
-      isDisabled: false,
-    };
-  </script>
 
   <div id="dialog-form"></div>
 
@@ -49,7 +37,19 @@
       {{/if}}
       <div id="dialog-status" data-link="class{merge:isError toggle='error'}">{^{:statusMessage()}}</div>
     </form>
-  
+  </script>
+
+  <script>
+    var data = {
+      url: "<?= url ?>", 
+      outputRange: "<?= outputRange ?>",
+      inputCount: "<?= inputCount ?>",
+      inputRange: "<?= inputRange ?>",
+      inputs: [],
+      statusMessage: "",
+      isError: false,
+      isDisabled: false,
+    };
   </script>
 
   <!-- Use a templated HTML printing scriptlet to import JavaScript -->
