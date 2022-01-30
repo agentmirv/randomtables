@@ -16,7 +16,7 @@
 
   <script id="sidebar-load-bar-template" type="text/x-jsrender">
     <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:randomTablesUrl():}">
-    <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton()} {on ~handleLoadButton}">Load</button>
+    <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton()} {on ~sidebarHelper.handleLoadButton}">Load</button>
   </script>
 
   <script id="sidebar-status-template" type="text/x-jsrender">
@@ -33,15 +33,15 @@
                 {^{:name()}} <a data-link="href{:url()}" target="_blank"> &#x2197;</a>
               </span>
               {^{if buttons().length > 0}}
-                <span class="sidebar-section-toggle" data-link="{on 'click' ~handleMinimize}">&#x25AD;</span>
+                <span class="sidebar-section-toggle" data-link="{on 'click' ~sidebarHelper.handleMinimize}">&#x25AD;</span>
               {{/if}}
-              <span class="sidebar-section-close" data-link="{on 'click' ~handleRemove}">&#x2715;</span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~sidebarHelper.handleRemove}">&#x2715;</span>
             </div>
               {^{if !isMinimized()}}
                 <span class="sidebar-section-container">
                   {^{for buttons()}}
                     <div class="block">
-                      <button class="action" data-link="{on ~handleAction}">{^{>name()}}</button>
+                      <button class="action" data-link="{on ~sidebarHelper.handleAction}">{^{>name()}}</button>
                       {^{if inputCount() > 0}}
                         <span>&#x2630;</span>
                       {{/if}}
@@ -54,7 +54,7 @@
               <span class="sidebar-section-title">
                 Error
               </span>
-              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">&#x2715;</span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~sidebarHelper.removeSection}">&#x2715;</span>
             </div>
             <span class="sidebar-section-container">
               <div class="block error section-status">
@@ -66,7 +66,7 @@
               <span class="sidebar-section-title">
                 Loading...
               </span>
-              <span class="sidebar-section-close" data-link="{on 'click' ~removeSection}">&#x2715;</span>
+              <span class="sidebar-section-close" data-link="{on 'click' ~sidebarHelper.removeSection}">&#x2715;</span>
             </div>
           {{/if}}
         </div>

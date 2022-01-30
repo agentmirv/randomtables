@@ -4,37 +4,37 @@
 <script src="https://www.jsviews.com/download/sample-tag-controls/jsviews-jqueryui-widgets.min.js"></script>
 
 <script>
-$.views.viewModels({
-  Sidebar: {
-    getters: [
-    "randomTablesUrl", 
-    "disableButton",
-    "statusMessage",
-    "isError",
-     { getter: "sections", type: "Section" },
-    ],
-    // extend: {addPhone: addPhone}
-  },
-  Section: {
-    getters: [
-      "url",
-      "name",
+  $.views.viewModels({
+    Sidebar: {
+      getters: [
+      "randomTablesUrl", 
+      "disableButton",
+      "statusMessage",
       "isError",
-      "isLoaded",
-      "isMinimized",
-      "msg",
-      { getter: "buttons", type: "Button" },
-    ]
-  },
-  Button: {
-    getters: [
-      "name",
-      "outputRange",
-      "inputCount",
-      "inputRange",
-    ]
-  },
-});  
+      { getter: "sections", type: "Section" },
+      ],
+      // extend: {addPhone: addPhone}
+    },
+    Section: {
+      getters: [
+        "url",
+        "name",
+        "isError",
+        "isLoaded",
+        "isMinimized",
+        "msg",
+        { getter: "buttons", type: "Button" },
+      ]
+    },
+    Button: {
+      getters: [
+        "name",
+        "outputRange",
+        "inputCount",
+        "inputRange",
+      ]
+    },
+  });  
 </script>
 <script>
   var helpers = {
@@ -153,14 +153,16 @@ $.views.viewModels({
 </script>
 <script>
   var sidebar = $.views.viewModels.Sidebar.map({ sections: [] });
-  
+
+  $.views.helpers({ sidebarHelper: helpers });
+
   $.templates("loadTemplate", "#sidebar-load-bar-template");
   $.templates("statusTemplate", "#sidebar-status-template");
   $.templates("sectionTemplate", "#sidebar-section-template");
 
-  $.link.loadTemplate("#sidebar-load-bar", sidebar, helpers);
-  $.link.statusTemplate("#sidebar-status", sidebar, helpers);
-  $.link.sectionTemplate("#sidebar-container", sidebar, helpers);
+  $.link.loadTemplate("#sidebar-load-bar", sidebar);
+  $.link.statusTemplate("#sidebar-status", sidebar);
+  $.link.sectionTemplate("#sidebar-container", sidebar);
 
   $.observe(sidebar.sections(), helpers.handleLoadSection);
 

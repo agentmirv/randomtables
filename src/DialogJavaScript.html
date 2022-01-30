@@ -83,8 +83,10 @@ $.views.viewModels({
 <script>
   var dialog = $.views.viewModels.Dialog.map(data);
 
+  $.views.helpers({ dialogHelper: helpers });
+
   $.templates("dialogTemplate", "#dialog-form-template");
-  $.link.dialogTemplate("#dialog-form", dialog, helpers);
+  $.link.dialogTemplate("#dialog-form", dialog);
 
   helpers.handleInitialize(dialog);
 </script>
