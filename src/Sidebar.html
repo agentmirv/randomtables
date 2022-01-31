@@ -15,7 +15,7 @@
   <div class="sidebar bottom"></div>
 
   <script id="sidebar-load-bar-template" type="text/x-jsrender">
-    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:randomTablesUrl():} disabled{:disableButton()}">
+    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:url():} disabled{:disableButton()}">
     <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton()} {on ~sidebarHelper.handleLoadButton}">Load</button>
   </script>
 
@@ -32,14 +32,14 @@
               <span class="sidebar-section-title">
                 {^{:name()}} <a data-link="href{:url()}" target="_blank"> &#x2197;</a>
               </span>
-              {^{if buttons().length > 0}}
+              {^{if actions().length > 0}}
                 <span class="sidebar-section-toggle" data-link="{on 'click' ~sidebarHelper.handleMinimize}">&#x25AD;</span>
               {{/if}}
               <span class="sidebar-section-close" data-link="{on 'click' ~sidebarHelper.handleRemove}">&#x2715;</span>
             </div>
               {^{if !isMinimized()}}
                 <span class="sidebar-section-container">
-                  {^{for buttons()}}
+                  {^{for actions()}}
                     <div class="block">
                       <button class="action" data-link="{on ~sidebarHelper.handleAction}">{^{>name()}}</button>
                       {^{if inputCount() > 0}}
@@ -58,7 +58,7 @@
             </div>
             <span class="sidebar-section-container">
               <div class="block error section-status">
-                {^{>msg()}}
+                {^{>statusMessage()}}
               </div>
             </span>
           {{else}}

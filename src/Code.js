@@ -1,4 +1,9 @@
 /**
+ * Random Tables
+ * Marvin Sevilla
+ */
+
+/**
  * Runs when the add-on is installed; calls onOpen() to ensure menu creation and
  * any other initializion work is done immediately.
  *
@@ -38,14 +43,15 @@ function handleInitialize() {
   return savedUrl;
 }
 
-function handleLoadButton(url) {
+function handleLoadButton(sidebar) {
+  let url = sidebar.url;
   let sections = [];
 
   try {
     saveRandomTablesUrl_(url);
     if (url != "") {
       let spreadsheet = SpreadsheetApp.openByUrl(url);
-      sections = getSheetUrls_(spreadsheet);  
+      sections = initializeSectionsFromUrls_(spreadsheet);  
     }
   } catch (error) {
     throw new Error(`Url [${url}] Error: ${error}`);
@@ -54,8 +60,9 @@ function handleLoadButton(url) {
   return sections;
 }
 
-function handleLoadSection(url) {
-  let section = { url: url, name: "", buttons: [], isLoaded: false, isMinimized: false };
+function handleLoadSection(sidebar) {
+  let url = sidebar.url;
+  let section = { url: url, name: "", actions: [], isLoaded: false, isMinimized: false };
 
   try {
     let spreadsheet = SpreadsheetApp.openByUrl(url);
@@ -64,15 +71,15 @@ function handleLoadSection(url) {
     section.name = name;
     
     if (sheet != null && sheet.getLastRow() > 1) {
-      // Starting at row 2, load Button text at Column 1
+      // Starting at row 2, read Index rows to populate actions
       const startRow = 2;
       const startColumn = 1;
       const numRows = sheet.getLastRow() - 1;
       const numColumns = 3;
       let values = sheet.getRange(startRow, startColumn, numRows, numColumns).getValues();
 
-      // Append each Button Text to the list of section buttons
-      section.buttons = values.reduce((accumulator, currentValue) => { 
+      // Append each button Text to the list of section actions
+      section.actions = values.reduce((accumulator, currentValue) => { 
         accumulator.push({ 
           name: currentValue[0], 
           outputRange: currentValue[1], 
@@ -80,7 +87,7 @@ function handleLoadSection(url) {
           inputRange: currentValue[2],
         }); 
         return accumulator; 
-      }, section.buttons);
+      }, section.actions);
     }  
   } catch (error) {
     throw new Error(`Url [${url}] Error: ${error}`);
@@ -89,7 +96,13 @@ function handleLoadSection(url) {
   return section;
 }
 
-function handleAction(url, name, outputRange, inputCount, inputRange) {
+function handleAction(section, action) {
+  let url = section.url;
+  let name = action.name;
+  let outputRange = action.outputRange;
+  let inputCount = action.inputCount;
+  let inputRange = action.inputRange;
+
   console.info({ url: url, name: name, outputRange: outputRange, inputCount: inputCount, inputRange: inputRange });
   try {
     let documentHasSelection = documentHasSelection_();
@@ -123,12 +136,14 @@ function saveRandomTablesUrl_(url) {
   }
 }
 
-function getSheetUrls_(spreadsheet) {
+function initializeSectionsFromUrls_(spreadsheet) {
   let sections = [];
   let urls = [];
   
+  // Start with the original url
   urls.push(spreadsheet.getUrl());
 
+  // Look for urls on the Links sheet
   let sheet = spreadsheet.getSheetByName('Links');
 
   if (sheet != null && sheet.getLastRow() > 1) {
@@ -141,8 +156,10 @@ function getSheetUrls_(spreadsheet) {
     }, urls);    
   }
 
+  // Initialize the list of sections with the url property to be loaded 
+  // asynchronously with handleLoadSection()
   sections = urls.reduce((accumulator, currentValue) => { 
-    accumulator.push({ url: currentValue, name: "", buttons: [], isLoaded: false, isMinimized: false }); 
+    accumulator.push({ url: currentValue, name: "", actions: [], isLoaded: false, isMinimized: false }); 
     return accumulator; 
   }, sections);
 
@@ -192,8 +209,9 @@ function showDialog_(url, name, outputRange, inputCount, inputRange) {
 //=========================================================
 // Dialog
 //=========================================================
-
-function handleLoadDialogInput(url, inputRangeA1, index) {
+function handleLoadDialogInput(dialog, index) {
+  let url = dialog.url;
+  let inputRangeA1 = dialog.inputRange;
   console.info({ url: url, inputRangeA1: inputRangeA1, index: index })
   let input = null;
 
@@ -210,6 +228,7 @@ function handleLoadDialogInput(url, inputRangeA1, index) {
     let inputRangeValidations = inputRange.getDataValidations();
     let valueValidations = inputRangeValidations[1][index];
   
+    // Build a list of options if the data validation is In List or In Range.
     if (valueValidations != null) {
       let type = valueValidations.getCriteriaType();
       let isInList = type == SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST;
@@ -279,11 +298,13 @@ function handleSubmitDialog(data) {
     let rangeValues = [];
     let rowValues = [];
   
+    // Read values from submitted dialog input data
     rowValues = data.inputs.sort((a, b) => a.index - b.index).reduce((accumulator, currentValue) => { 
       accumulator.push( currentValue.value ); 
       return accumulator; 
     }, rowValues);
   
+    // rangeValues is a rectangular array of one row of values
     rangeValues.push(rowValues);
     console.info({ rangeValues: rangeValues });
   
@@ -313,6 +334,7 @@ function addContentAtCursor_(spreadsheet, outputRangeA1) {
         // offset(rowOffset, columnOffset, numRows, numColumns)
         outputRange = outputRange.offset(0, 0, 2, 1);
         let [outputType, outputValue] = outputRange.getValues();
+        // imageurl type
         if (outputType == 'imageurl') {
           try {
             console.info({ imageurl: outputValue });

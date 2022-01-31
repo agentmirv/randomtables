@@ -38,16 +38,15 @@ $.views.viewModels({
     //=================================
     // handleInitialize -> for handleLoadDialogInput
     //=================================
-    handleInitialize: function(dialogData) {
-      var url = dialogData.url();
-      var inputCount = dialogData.inputCount();
-      var inputRange = dialogData.inputRange();
+    handleInitialize: function(dialogViewModel) {
+      var inputCount = dialogViewModel.inputCount();
       for (var i = 0; i < inputCount; i++) {
-        $.observable(dialogData.inputs()).insert($.views.viewModels.Input.map({ options: [] }));
+        $.observable(dialogViewModel.inputs()).insert($.views.viewModels.Input.map({ options: [] }));
         google.script.run
-          .withUserObject(dialogData)
+          .withUserObject(dialogViewModel)
           .withSuccessHandler(
             function (input, userObject) {
+              console.log(input);
               userObject.inputs()[input.index].merge(input);
             })
           .withFailureHandler(
@@ -55,18 +54,17 @@ $.views.viewModels({
               userObject.statusMessage(msg);
               userObject.isError(true);
             })
-          .handleLoadDialogInput(url, inputRange, i);
+          .handleLoadDialogInput(dialogViewModel.unmap(), i);
       }
     },
     //=================================
     // handleSubmitDialog -> handleSubmitDialog
     //=================================
     handleSubmitDialog: function(ev, eventArgs) {
-      var dialogData = eventArgs.view.data;
-      var dialogSubmitData = dialogData.unmap();
-      dialogData.isDisabled(true);
+      var dialogViewModel = eventArgs.view.data;
+      dialogViewModel.isDisabled(true);
       google.script.run
-        .withUserObject(dialogData)
+        .withUserObject(dialogViewModel)
         .withSuccessHandler(
           function (userObject) {
             google.script.host.close();
@@ -76,17 +74,17 @@ $.views.viewModels({
             userObject.statusMessage(msg);
             userObject.isError(true);
           })
-        .handleSubmitDialog(dialogSubmitData);
+        .handleSubmitDialog(dialogViewModel.unmap());
     },
   };
 </script>  
 <script>
-  var dialog = $.views.viewModels.Dialog.map(data);
+  var dialogViewModel = $.views.viewModels.Dialog.map(data);
 
   $.views.helpers({ dialogHelper: helpers });
 
   $.templates("dialogTemplate", "#dialog-form-template");
-  $.link.dialogTemplate("#dialog-form", dialog);
+  $.link.dialogTemplate("#dialog-form", dialogViewModel);
 
-  helpers.handleInitialize(dialog);
+  helpers.handleInitialize(dialogViewModel);
 </script>

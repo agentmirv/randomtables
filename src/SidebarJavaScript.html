@@ -7,7 +7,7 @@
   $.views.viewModels({
     Sidebar: {
       getters: [
-      "randomTablesUrl", 
+      "url", 
       "disableButton",
       "statusMessage",
       "isError",
@@ -22,11 +22,11 @@
         "isError",
         "isLoaded",
         "isMinimized",
-        "msg",
-        { getter: "buttons", type: "Button" },
+        "statusMessage",
+        { getter: "actions", type: "Action" },
       ]
     },
-    Button: {
+    Action: {
       getters: [
         "name",
         "outputRange",
@@ -41,14 +41,14 @@
     //=================================
     // handleInitialize -> handleInitialize
     //=================================
-    handleInitialize: function(sidebar) {
+    handleInitialize: function(sidebarViewModel) {
       var helper = this;
-      sidebar.disableButton(true);
+      sidebarViewModel.disableButton(true);
       google.script.run
-        .withUserObject(sidebar)
+        .withUserObject(sidebarViewModel)
         .withSuccessHandler(
           function (url, userObject) {
-            userObject.randomTablesUrl(url);
+            userObject.url(url);
             userObject.disableButton(false);
             userObject.statusMessage("");
             userObject.isError(false);
@@ -66,16 +66,16 @@
     // handleLoadButton -> loadRandomTablesUrl
     //=================================
     handleLoadButton: function(ev, eventArgs) {
-      var sidebar = eventArgs.view.data;
-      this.loadRandomTablesUrl(sidebar);
+      var sidebarViewModel = eventArgs.view.data;
+      this.loadRandomTablesUrl(sidebarViewModel.unmap());
     },
     //=================================
     // loadRandomTablesUrl -> handleLoadButton
     //=================================
-    loadRandomTablesUrl: function(sidebar) {
-      sidebar.disableButton(true);
+    loadRandomTablesUrl: function(sidebarViewModel) {
+      sidebarViewModel.disableButton(true);
       google.script.run
-        .withUserObject(sidebar)
+        .withUserObject(sidebarViewModel)
         .withSuccessHandler(
           function (sections, userObject) {
             for (let i = 0; i < sections.length; i++){
@@ -91,60 +91,60 @@
             userObject.statusMessage(msg);
             userObject.isError(true);
           })
-        .handleLoadButton(sidebar.randomTablesUrl());
+        .handleLoadButton(sidebarViewModel.unmap());
     },
     //=================================
     // handleLoadSection -> handleLoadSection
     //=================================
     handleLoadSection: function(ev, eventArgs) {
       if (eventArgs.change == "insert") {
-        var sectionData = eventArgs.items[0];
+        var sectionViewModel = eventArgs.items[0];
         google.script.run
-          .withUserObject(sectionData)
+          .withUserObject(sectionViewModel)
           .withSuccessHandler(
             function (section, userObject) {
               userObject.name(section.name);
               userObject.url(section.url);
-              userObject.buttons($.views.viewModels.Button.map(section.buttons))
+              userObject.actions($.views.viewModels.Action.map(section.actions))
               userObject.isLoaded(true);
             })
           .withFailureHandler(
             function (msg, userObject) {
-              userObject.msg(msg);
+              userObject.statusMessage(msg);
               userObject.isError(true);
             })
-          .handleLoadSection(sectionData.url());
+          .handleLoadSection(sectionViewModel.unmap());
       }
     },
     //=================================
     // handleMinimize
     //=================================
     handleMinimize: function(ev, eventArgs) {
-      var sectionData = eventArgs.view.data;
-      sectionData.isMinimized(!sectionData.isMinimized());
+      var sectionViewModel = eventArgs.view.data;
+      sectionViewModel.isMinimized(!sectionViewModel.isMinimized());
     },
     //=================================
     // handleRemove
     //=================================
     handleRemove: function(ev, eventArgs) {
-      var sidebarData = eventArgs.view.root.data;
+      var sidebarViewModel = eventArgs.view.root.data;
       var sectionIndex = eventArgs.view.getIndex();
-      $.observable(sidebarData.sections()).remove(sectionIndex);
+      $.observable(sidebarViewModel.sections()).remove(sectionIndex);
     },
     //=================================
     // handleAction -> handleAction
     //=================================
     handleAction: function(ev, eventArgs) {
-      var actionData = eventArgs.view.data;
-      var sectionData = eventArgs.view.parent.parent.data;
-      var sidebarData = eventArgs.view.root.data; 
-      var url = sectionData.url()
-      var name = actionData.name();
-      var outputRange = actionData.outputRange(); 
-      var inputCount = actionData.inputCount();
-      var inputRange = actionData.inputRange();
+      var actionViewModel = eventArgs.view.data;
+      var sectionViewModel = eventArgs.view.parent.parent.data;
+      var sidebarViewModel = eventArgs.view.root.data; 
+      var url = sectionViewModel.url()
+      var name = actionViewModel.name();
+      var outputRange = actionViewModel.outputRange(); 
+      var inputCount = actionViewModel.inputCount();
+      var inputRange = actionViewModel.inputRange();
       google.script.run
-        .withUserObject(sidebarData)
+        .withUserObject(sidebarViewModel)
         .withSuccessHandler(
           function (returnValue, userObject) {
             userObject.statusMessage("");
@@ -155,12 +155,12 @@
             userObject.statusMessage(msg);
             userObject.isError(true);
           })
-        .handleAction(url, name, outputRange, inputCount, inputRange);
+        .handleAction(sectionViewModel.unmap(), actionViewModel.unmap());
     },
   };
 </script>
 <script>
-  var sidebar = $.views.viewModels.Sidebar.map({ sections: [] });
+  var sidebarViewModel = $.views.viewModels.Sidebar.map({ sections: [] });
 
   $.views.helpers({ sidebarHelper: helpers });
 
@@ -168,11 +168,11 @@
   $.templates("statusTemplate", "#sidebar-status-template");
   $.templates("sectionTemplate", "#sidebar-section-template");
 
-  $.link.loadTemplate("#sidebar-load-bar", sidebar);
-  $.link.statusTemplate("#sidebar-status", sidebar);
-  $.link.sectionTemplate("#sidebar-container", sidebar);
+  $.link.loadTemplate("#sidebar-load-bar", sidebarViewModel);
+  $.link.statusTemplate("#sidebar-status", sidebarViewModel);
+  $.link.sectionTemplate("#sidebar-container", sidebarViewModel);
 
-  $.observe(sidebar.sections(), helpers.handleLoadSection);
+  $.observe(sidebarViewModel.sections(), helpers.handleLoadSection);
 
-  helpers.handleInitialize(sidebar);
+  helpers.handleInitialize(sidebarViewModel);
 </script>
