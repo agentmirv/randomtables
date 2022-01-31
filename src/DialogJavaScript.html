@@ -41,12 +41,12 @@ $.views.viewModels({
     handleInitialize: function(dialogViewModel) {
       var inputCount = dialogViewModel.inputCount();
       for (var i = 0; i < inputCount; i++) {
-        $.observable(dialogViewModel.inputs()).insert($.views.viewModels.Input.map({ options: [] }));
+        var inputViewModel = $.views.viewModels.Input.map({ index: i, options: [] });
+        $.observable(dialogViewModel.inputs()).insert(inputViewModel);
         google.script.run
           .withUserObject(dialogViewModel)
           .withSuccessHandler(
             function (input, userObject) {
-              console.log(input);
               userObject.inputs()[input.index].merge(input);
             })
           .withFailureHandler(
@@ -54,7 +54,7 @@ $.views.viewModels({
               userObject.statusMessage(msg);
               userObject.isError(true);
             })
-          .handleLoadDialogInput(dialogViewModel.unmap(), i);
+          .handleLoadDialogInput(dialogViewModel.unmap(), inputViewModel.unmap());
       }
     },
     //=================================

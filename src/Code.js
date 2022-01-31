@@ -209,9 +209,10 @@ function showDialog_(url, name, outputRange, inputCount, inputRange) {
 //=========================================================
 // Dialog
 //=========================================================
-function handleLoadDialogInput(dialog, index) {
+function handleLoadDialogInput(dialog, input) {
   let url = dialog.url;
   let inputRangeA1 = dialog.inputRange;
+  let index = input.index;
   console.info({ url: url, inputRangeA1: inputRangeA1, index: index })
   let input = null;
 
