@@ -37,18 +37,18 @@
               {{/if}}
               <span class="sidebar-section-close" data-link="{on 'click' ~sidebarHelper.handleRemove}">&#x2715;</span>
             </div>
-              {^{if !isMinimized()}}
-                <span class="sidebar-section-container">
-                  {^{for actions()}}
-                    <div class="block">
-                      <button class="action" data-link="{on ~sidebarHelper.handleAction} disabled{:isDisabled()||null}">{^{>name()}}</button>
-                      {^{if inputCount() > 0}}
-                        <span>&#x1F892;</span>
-                      {{/if}}
-                    </div>
-                  {{/for}}
-                </span>
-              {{/if}}
+            {^{if !isMinimized()}}
+              <span class="sidebar-section-container">
+                {^{for actions()}}
+                  <div class="block">
+                    <button class="action" data-link="{on ~sidebarHelper.handleAction} disabled{:isDisabled()||null}">{^{>name()}}</button>
+                    {^{if inputCount() > 0}}
+                      <span>&#x1F7B0;</span>
+                    {{/if}}
+                  </div>
+                {{/for}}
+              </span>
+            {{/if}}
           {{else isError()}}
             <div class="sidebar-section-title-bar">
               <span class="sidebar-section-title">
@@ -75,6 +75,8 @@
   </script>  
 
   <!-- Use a templated HTML printing scriptlet to import JavaScript -->
+  <?!= HtmlService.createHtmlOutputFromFile('ClientJavaScript').getContent(); ?>
+  <?!= HtmlService.createHtmlOutputFromFile('JsViewsWidgetsJavaScript').getContent(); ?>
   <?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>
 
   </body>
