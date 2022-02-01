@@ -62,7 +62,7 @@ function handleLoadButton(sidebar) {
 
 function handleLoadSection(sidebar) {
   let url = sidebar.url;
-  let section = { url: url, name: "", actions: [], isLoaded: false, isMinimized: false };
+  let section = { url: url, name: "", actions: [], isLoaded: false, isMinimized: false, isDisabled: false };
 
   try {
     let spreadsheet = SpreadsheetApp.openByUrl(url);
@@ -159,7 +159,7 @@ function initializeSectionsFromUrls_(spreadsheet) {
   // Initialize the list of sections with the url property to be loaded 
   // asynchronously with handleLoadSection()
   sections = urls.reduce((accumulator, currentValue) => { 
-    accumulator.push({ url: currentValue, name: "", actions: [], isLoaded: false, isMinimized: false }); 
+    accumulator.push({ url: currentValue, name: "", actions: [], isLoaded: false, isMinimized: false, isDisabled: false }); 
     return accumulator; 
   }, sections);
 
@@ -214,7 +214,7 @@ function handleLoadDialogInput(dialog, input) {
   let inputRangeA1 = dialog.inputRange;
   let index = input.index;
   console.info({ url: url, inputRangeA1: inputRangeA1, index: index })
-  let input = null;
+  let newInput = null;
 
   try {
     let spreadsheet = SpreadsheetApp.openByUrl(url);
@@ -254,7 +254,7 @@ function handleLoadDialogInput(dialog, input) {
       }  
     }
   
-    input = {
+    newInput = {
       description: description,
       hasOptions: hasOptions,
       index: index,
@@ -275,7 +275,7 @@ function handleLoadDialogInput(dialog, input) {
     throw new Error(`Input [${inputRangeA1}]: ${error}`);
   }
 
-  return input;
+  return newInput;
 }
 
 function handleSubmitDialog(data) {

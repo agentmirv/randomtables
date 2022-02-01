@@ -15,8 +15,8 @@
   <div class="sidebar bottom"></div>
 
   <script id="sidebar-load-bar-template" type="text/x-jsrender">
-    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:url():} disabled{:disableButton()}">
-    <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:disableButton()} {on ~sidebarHelper.handleLoadButton}">Load</button>
+    <input type="text" id="sidebar-load-url" class="sidebar-load-url" placeholder="Google Sheet URL" data-link="{:url():} disabled{:isDisabled()||null}">
+    <button class="action sidebar-load-button" id="sidebar-load-button" data-link="disabled{:isDisabled()||null} {on ~sidebarHelper.handleLoadButton}">Load</button>
   </script>
 
   <script id="sidebar-status-template" type="text/x-jsrender">
@@ -41,7 +41,7 @@
                 <span class="sidebar-section-container">
                   {^{for actions()}}
                     <div class="block">
-                      <button class="action" data-link="{on ~sidebarHelper.handleAction}">{^{>name()}}</button>
+                      <button class="action" data-link="{on ~sidebarHelper.handleAction} disabled{:isDisabled()||null}">{^{>name()}}</button>
                       {^{if inputCount() > 0}}
                         <span>&#x2630;</span>
                       {{/if}}

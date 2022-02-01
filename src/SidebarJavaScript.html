@@ -8,12 +8,11 @@
     Sidebar: {
       getters: [
       "url", 
-      "disableButton",
+      "isDisabled",
       "statusMessage",
       "isError",
       { getter: "sections", type: "Section" },
       ],
-      // extend: {addPhone: addPhone}
     },
     Section: {
       getters: [
@@ -32,6 +31,7 @@
         "outputRange",
         "inputCount",
         "inputRange",
+        "isDisabled",
       ]
     },
   });  
@@ -43,20 +43,20 @@
     //=================================
     handleInitialize: function(sidebarViewModel) {
       var helper = this;
-      sidebarViewModel.disableButton(true);
+      sidebarViewModel.isDisabled(true);
       google.script.run
         .withUserObject(sidebarViewModel)
         .withSuccessHandler(
           function (url, userObject) {
             userObject.url(url);
-            userObject.disableButton(false);
+            userObject.isDisabled(false);
             userObject.statusMessage("");
             userObject.isError(false);
             helper.loadRandomTablesUrl(userObject);
           })
         .withFailureHandler(
           function (msg, userObject) {
-            userObject.disableButton(false);
+            userObject.isDisabled(false);
             userObject.statusMessage(msg);
             userObject.isError(true);
           })
@@ -67,13 +67,13 @@
     //=================================
     handleLoadButton: function(ev, eventArgs) {
       var sidebarViewModel = eventArgs.view.data;
-      this.loadRandomTablesUrl(sidebarViewModel.unmap());
+      this.loadRandomTablesUrl(sidebarViewModel);
     },
     //=================================
     // loadRandomTablesUrl -> handleLoadButton
     //=================================
     loadRandomTablesUrl: function(sidebarViewModel) {
-      sidebarViewModel.disableButton(true);
+      sidebarViewModel.isDisabled(true);
       google.script.run
         .withUserObject(sidebarViewModel)
         .withSuccessHandler(
@@ -81,13 +81,13 @@
             for (let i = 0; i < sections.length; i++){
               $.observable(userObject.sections()).insert($.views.viewModels.Section.map(sections[i]));
             } 
-            userObject.disableButton(false);
+            userObject.isDisabled(false);
             userObject.statusMessage("");
             userObject.isError(false);
           })
         .withFailureHandler(
           function (msg, userObject) {
-            userObject.disableButton(false);
+            userObject.isDisabled(false);
             userObject.statusMessage(msg);
             userObject.isError(true);
           })
@@ -143,15 +143,18 @@
       var outputRange = actionViewModel.outputRange(); 
       var inputCount = actionViewModel.inputCount();
       var inputRange = actionViewModel.inputRange();
+      actionViewModel.isDisabled(true);
       google.script.run
         .withUserObject(sidebarViewModel)
         .withSuccessHandler(
           function (returnValue, userObject) {
+            actionViewModel.isDisabled(false);
             userObject.statusMessage("");
             userObject.isError(false);
           })
         .withFailureHandler(
           function (msg, userObject) {
+            actionViewModel.isDisabled(false);
             userObject.statusMessage(msg);
             userObject.isError(true);
           })
